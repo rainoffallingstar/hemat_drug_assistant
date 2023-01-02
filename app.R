@@ -5,6 +5,7 @@
 
 library(shiny)
 library(readxl)
+library(DT)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -32,7 +33,7 @@ ui <- fluidPage(
           tabsetPanel(
           tabPanel("Recommendation", 
                    tableOutput("table1"),
-                   tableOutput("table2")),
+                  DT::DTOutput("table2")),
            tabPanel("Reference",
                     tableOutput("table3")),
           tabPanel("About me",
@@ -66,18 +67,19 @@ server <- function(input, output) {
   })
   
   calculate_regimen <- reactive({
-    df <- regimen()
+    df2 <- as.data.frame(regimen())
     bsa <- as.numeric(bsa())
-    for (i in nrow(df)) {
-      if (df[i,2] == "monoclone"){
+    for (i in 1:nrow(df2)) {
+      if (df2[i,2] == "monoclone"){
         print("no more operation")
-      }else if (df[i,3] == 0) {
-        df[i,4] = df[i,4] * bsa
-        df[i,5] = df[i,5] * bsa
+      }else if (df2[i,3] == 0) {
+        df2[i,4] = df2[i,4] * bsa
+        df2[i,5] = df2[i,5] * bsa
       } else {
-        df[i,3] = df[i,3] * bsa
+        df2[i,3] = df2[i,3] * bsa
       }
     }
+    df <- df2
   })
   
   output$table1 <- renderTable({
@@ -87,8 +89,8 @@ server <- function(input, output) {
                BSA = bsa())
   })
   
-  output$table2 <- renderTable({
-    calculate_regimen()
+  output$table2 <- DT::renderDT({
+    as.data.frame(calculate_regimen())
   })
   
   output$table3 <- renderTable({
