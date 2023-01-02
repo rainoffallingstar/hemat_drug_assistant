@@ -1,23 +1,36 @@
 # hemat_drug_assistant
 
 #### 介绍
+
 A shiny application developed for drug does calculation in clinical works.
 
 #### 软件架构
-软件架构说明
 
+1.  方案按方案名命名的单个excel文件保存在data文件夹下
 
-#### 安装教程
+2.  保持selectInput内的变量名与data文件夹下的文件名一致
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+3.  excel文件的模板见temple.xlsx文件，具体内容如下：
+
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |-----|----------------|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+    |     | 药名  |     | 类型                          |     | 推荐值 |     | 最小值 |     | 最大值 |     | 单位 |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |     | drug1 |     | chemo                         |     | 750    |     | 0      |     | 0      |     | mg   |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |     | drug2 |     | monoclone（单抗类，固定计量） |     | 50     |     | 0      |     | 0      |     | mg   |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |     | drug3 |     | chemo                         |     | 1.4    |     | 0      |     | 0      |     | mg   |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |     | drug4 |     | chemo                         |     | 60     |     | 0      |     | 0      |     | mg   |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
+    |     | drug5 |     | mono（单抗类，计算计量）      |     | 375    |     | 0      |     | 0      |     | mg   |     |
+    |     |       |     |                               |     |        |     |        |     |        |     |      |     |
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  在rstudio内本地部署使用
+2.  我们有一个部署实例，在[rsconnect.](https://rainoffallingstar.shinyapps.io/hemat_drug_assistant/)
 
 #### 参与贡献
 
@@ -26,12 +39,4 @@ A shiny application developed for drug does calculation in clinical works.
 3.  提交代码
 4.  新建 Pull Request
 
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+#### 
