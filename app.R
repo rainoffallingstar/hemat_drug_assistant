@@ -47,15 +47,15 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   bmi <- reactive({
-    w <- input$weight
-    h <- input$height
+    w <- as.numeric(input$weight)
+    h <- as.numeric(input$height)
     w /((h / 100)^2)
   })
   
   bsa <- reactive({
     # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
-    w <- input$weight
-    h <- input$height
+    w <- as.numeric(input$weight)
+    h <- as.numeric(input$height)
     (h * w / 3600)^0.5
   })
   
@@ -67,11 +67,11 @@ server <- function(input, output) {
   
   calculate_regimen <- reactive({
     df <- regimen()
-    bsa <- bsa()
+    bsa <- as.numeric(bsa())
     for (i in nrow(df)) {
       if (df[i,2] == "monoclone"){
         print("no more operation")
-      }else if (is.na(df[i,3]) == TRUE) {
+      }else if (df[i,3] == 0) {
         df[i,4] = df[i,4] * bsa
         df[i,5] = df[i,5] * bsa
       } else {
@@ -96,11 +96,11 @@ server <- function(input, output) {
   })
   
   output$about <- renderText({
-    df <- regimen()
+   
     print(paste("This application is under developed by fallingstar, The calculation of Body Mass
           Index(BMI) and Body Surface Area(BSA) is refered to the Mosteller formula, in which 
           m2 = [ Height, cm x Weight, kg  / 3600 ]1/2. In addition, the refered drug does and regimens are taken according to 
-          血液科临床处方手册",df[1,2]))
+          血液科临床处方手册"))
   }
   )
   
