@@ -5,7 +5,6 @@
 
 library(shiny)
 library(readxl)
-library(DT)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -25,7 +24,10 @@ ui <- fluidPage(
           selectInput("regimens",
                       "Regimens Selected",
                       selected = "R-CHOP",
-                      choices = c("R-CHOP", "regimen2"))
+                      choices = c("R-CHOP", "mini-CHOP",
+                                  "VDCLP-ALL","CAM-all-Consolidation","VDCP-ALL-late",
+                                  "MTX-PNSL","MTX-AML",
+                                  "AZA-AML"))
         ),
 
         # Show a plot of the generated distribution
@@ -33,9 +35,9 @@ ui <- fluidPage(
           tabsetPanel(
           tabPanel("Recommendation", 
                    tableOutput("table1"),
-                  DT::DTOutput("table2")),
-           tabPanel("Reference",
-                    tableOutput("table3")),
+                   tableOutput("table2")),
+           #tabPanel("Reference",
+            #        tableOutput("table3")),
           tabPanel("About me",
                    textOutput("about"),
                    plotOutput("plt"),)
@@ -63,7 +65,7 @@ server <- function(input, output) {
   regimen <- reactive({
     read_excel(paste0(getwd(), "/data/", input$regimens, ".xlsx"),
                col_types = c("text", "text", "numeric", 
-                              "numeric", "numeric", "text"))
+                              "numeric", "numeric", "numeric", "text"))
   })
   
   calculate_regimen <- reactive({
@@ -71,15 +73,17 @@ server <- function(input, output) {
     bsa <- as.numeric(bsa())
     for (i in 1:nrow(df2)) {
       if (df2[i,2] == "monoclone"){
-        print("no more operation")
+        df2[i,4] = df[i,4]+ df2[i,3]
+      }else if (df2[i,2] == "weight"){
+        df2[i,4] = df2[i,3] * as.numeric(input$weight)
       }else if (df2[i,3] == 0) {
-        df2[i,4] = df2[i,4] * bsa
         df2[i,5] = df2[i,5] * bsa
+        df2[i,6] = df2[i,6] * bsa
       } else {
-        df2[i,3] = df2[i,3] * bsa
+        df2[i,4] = df2[i,3] * bsa
       }
     }
-    df <- df2
+    df <- df2 
   })
   
   output$table1 <- renderTable({
@@ -89,13 +93,13 @@ server <- function(input, output) {
                BSA = bsa())
   })
   
-  output$table2 <- DT::renderDT({
+  output$table2 <- renderTable({
     as.data.frame(calculate_regimen())
   })
   
-  output$table3 <- renderTable({
-    regimen()
-  })
+  #output$table3 <- renderTable({
+   # regimen()
+  #})
   
   output$about <- renderText({
    
