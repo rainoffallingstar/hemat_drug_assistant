@@ -4,6 +4,7 @@
 # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
 
 library(shiny)
+library(shinyWidgets)
 library(readxl)
 
 # Define UI for application that draws a histogram
@@ -21,13 +22,20 @@ ui <- fluidPage(
           textInput("height",
                     "Height(CM)",
                     "170"),
-          selectInput("regimens",
+          pickerInput("regimens",
                       "Regimens Selected",
                       selected = "R-CHOP",
-                      choices = c("R-CHOP", "mini-CHOP",
-                                  "VDCLP-ALL","CAM-all-Consolidation","VDCP-ALL-late",
-                                  "MTX-PNSL","MTX-AML",
-                                  "AZA-AML"))
+                      choices = list(lymphoma = c("R-CHOP", "mini-CHOP","MTX-PNSL",
+                                                  "Hyper-CVAD-MTX-Ara-C-R","ABVD",
+                                                  "DA-EPOCH-R"),
+                                  ALL = c("VDCLP-ALL","CAM-all-Consolidation",
+                                          "VDCP-ALL-late"),
+                                  AML = c("APL-tripple-induce","median-Ara-AML",
+                                          "large-Ara-AML","IA","DA",
+                                          "Aza-Venetoclax"),
+                                  MM = c("MP","VAD")
+                                  )
+          )
         ),
 
         # Show a plot of the generated distribution
@@ -40,11 +48,12 @@ ui <- fluidPage(
             #        tableOutput("table3")),
           tabPanel("About me",
                    textOutput("about"),
-                   plotOutput("plt"),)
+                   plotOutput("plt"))
         )
         )
     )
 )
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -73,7 +82,7 @@ server <- function(input, output) {
     bsa <- as.numeric(bsa())
     for (i in 1:nrow(df2)) {
       if (df2[i,2] == "monoclone"){
-        df2[i,4] = df[i,4]+ df2[i,3]
+        df2[i,4] = df2[i,4]+ df2[i,3]
       }else if (df2[i,2] == "weight"){
         df2[i,4] = df2[i,3] * as.numeric(input$weight)
       }else if (df2[i,3] == 0) {
@@ -103,10 +112,10 @@ server <- function(input, output) {
   
   output$about <- renderText({
    
-    print(paste("This application is under developed by fallingstar, The calculation of Body Mass
+    print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu and Prof.Xiaoxue Wang from the department of hematology,CMU1H. The calculation of Body Mass
           Index(BMI) and Body Surface Area(BSA) is refered to the Mosteller formula, in which 
-          m2 = [ Height, cm x Weight, kg  / 3600 ]1/2. In addition, the refered drug does and regimens are taken according to 
-          血液科临床处方手册"))
+          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. In addition, the citated drug does and regimens are taken an chinese clinical handbook named 
+          [血液科临床处方手册]"))
   }
   )
   
