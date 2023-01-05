@@ -33,8 +33,16 @@ ui <- fluidPage(
                                   AML = c("APL-tripple-induce","median-Ara-AML",
                                           "large-Ara-AML","IA","DA",
                                           "Aza-Venetoclax"),
-                                  MM = c("MP","VAD")
+                                  MM = c("VRD","MP","VAD")
                                   )
+          ),
+          prettyRadioButtons(
+            inputId = "gender",
+            label = "Choose:", 
+            choices = c("Common", "Felmale", "Male"),
+            inline = TRUE, 
+            status = "danger",
+            fill = TRUE
           )
         ),
 
@@ -68,7 +76,15 @@ server <- function(input, output) {
     # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
     w <- as.numeric(input$weight)
     h <- as.numeric(input$height)
-    (h * w / 3600)^0.5
+    if (input$gender == "Common"){
+      (h * w / 3600)^0.5
+    } else if (input$gender == "Felmale"){
+    #0.0073×身高（cm）+0.0127×体重（kg）-0.2106
+      0.0073 * h + 0.0127 * w - 0.2106
+    } else{
+    #0.0057×身高（cm）+0.0121×体重（kg）+0.0882
+      0.0057 * h + 0.0121 * w + 0.0882
+    }
   })
   
   regimen <- reactive({
@@ -112,9 +128,9 @@ server <- function(input, output) {
   
   output$about <- renderText({
    
-    print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu and Prof.Xiaoxue Wang from the department of hematology,CMU1H. The calculation of Body Mass
+    print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. The calculation of Body Mass
           Index(BMI) and Body Surface Area(BSA) is refered to the Mosteller formula, in which 
-          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. In addition, the citated drug does and regimens are taken an chinese clinical handbook named 
+          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. In addition, the citated drug does and regimens are taken from an chinese clinical handbook named 
           [血液科临床处方手册]"))
   }
   )
