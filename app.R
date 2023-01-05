@@ -38,7 +38,7 @@ ui <- fluidPage(
           ),
           prettyRadioButtons(
             inputId = "gender",
-            label = "Choose:", 
+            label = "Choose Gender:", 
             choices = c("Common", "Felmale", "Male"),
             inline = TRUE, 
             status = "danger",
@@ -129,8 +129,9 @@ server <- function(input, output) {
   output$about <- renderText({
    
     print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. The calculation of Body Mass
-          Index(BMI) and Body Surface Area(BSA) is refered to the Mosteller formula, in which 
-          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. In addition, the citated drug does and regimens are taken from an chinese clinical handbook named 
+          Index(BMI) is based on the famous formula BMI = weight,kg/(height,cm/100)^2, and Body Surface Area(BSA) is generally refered to the Mosteller formula, in which 
+          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. However, we also provide some alternation for the situation of different genders, in which the BSA for felmale = 0.0073× height,cm + 0.0127× weight,kg -0.2106 and
+          BSA for male = 0.0057× height,cm +0.0121 × weight,kg +0.0882. In addition, the citated drug does and regimens are taken from an chinese clinical handbook named 
           [血液科临床处方手册]"))
   }
   )
