@@ -6,9 +6,9 @@ A shiny application developed for drug does calculation in clinical works.
 
 #### 软件架构
 
-1.  方案按方案名命名的单个excel文件保存在data文件夹下
+1.  方案按方案名命名的单个excel文件保存在data文件夹下按疾病命名的子文件夹内
 
-2.  保持selectInput内的变量名与data文件夹下的文件名一致
+2.  pickerInput内的变量名由程序自动扫描清洗形成，本程序代码与数据文件夹解耦。
 
 3.  excel文件的模板见temple.xlsx文件，具体内容如下：
 

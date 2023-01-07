@@ -6,8 +6,23 @@
 library(shiny)
 library(shinyWidgets)
 library(readxl)
+library(fs)
 
 # Define UI for application that draws a histogram
+disease_list <- list()
+disease_names<- list.dirs(paste0(getwd(), "/data/"),
+                                 full.names = FALSE, recursive = FALSE)
+
+for (i in 1:length(disease_names)){
+  filelist <- list.files(paste0(getwd(), "/data/",disease_names[i],"/"), 
+                                  pattern = ".xlsx", recursive = FALSE)
+  for (a in 1:length(filelist) ){
+    filelist[a] <- substring(filelist[a],1,nchar(filelist[a])-5)
+  }
+  disease_list[[i]] <- filelist
+}
+names(disease_list) <-disease_names
+
 ui <- fluidPage(
 
     # Application title
@@ -25,16 +40,7 @@ ui <- fluidPage(
           pickerInput("regimens",
                       "Regimens Selected",
                       selected = "R-CHOP",
-                      choices = list(lymphoma = c("R-CHOP", "mini-CHOP","MTX-PNSL",
-                                                  "Hyper-CVAD-MTX-Ara-C-R","ABVD",
-                                                  "DA-EPOCH-R"),
-                                  ALL = c("VDCLP-ALL","CAM-all-Consolidation",
-                                          "VDCP-ALL-late"),
-                                  AML = c("APL-tripple-induce","median-Ara-AML",
-                                          "large-Ara-AML","IA","DA",
-                                          "Aza-Venetoclax"),
-                                  MM = c("VRD","MP","VAD")
-                                  )
+                      choices = disease_list
           ),
           prettyRadioButtons(
             inputId = "gender",
@@ -88,7 +94,13 @@ server <- function(input, output) {
   })
   
   regimen <- reactive({
-    read_excel(paste0(getwd(), "/data/", input$regimens, ".xlsx"),
+    n=1
+    drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
+    while (file.exists(drug_path) == FALSE && n <= length(disease_names)-1) {
+      n = n+1
+      drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
+    }
+    read_excel(drug_path,
                col_types = c("text", "text", "numeric", 
                               "numeric", "numeric", "numeric", "text"))
   })
