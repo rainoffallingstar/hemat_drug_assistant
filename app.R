@@ -7,6 +7,7 @@ library(shiny)
 library(shinyWidgets)
 library(readxl)
 library(fs)
+library(dplyr)
 
 # Define UI for application that draws a histogram
 disease_list <- list()
@@ -134,7 +135,8 @@ server <- function(input, output) {
   })
   
   output$table2 <- renderTable({
-    as.data.frame(calculate_regimen())
+    as.data.frame(calculate_regimen()) %>% 
+      select(-"类型")
   })
   
   #output$table3 <- renderTable({
