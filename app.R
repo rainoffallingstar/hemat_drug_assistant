@@ -89,11 +89,11 @@ server <- function(input, output) {
     if (input$gender == "Common"){
       (h * w / 3600)^0.5
     } else if (input$gender == "Female"){
-    #0.0073×身高（cm）+0.0127×体重（kg）-0.2106
-      0.0073 * h + 0.0127 * w - 0.2106
+    #0.00586×身高（cm）+0.0126×体重（kg）-0.0461
+      0.00586 * h + 0.0126 * w - 0.0461
     } else{
-    #0.0057×身高（cm）+0.0121×体重（kg）+0.0882
-      0.0057 * h + 0.0121 * w + 0.0882
+    #0.00607×身高（cm）+0.0127×体重（kg）- 0.0698
+      0.00607 * h + 0.0127 * w - 0.0698
     }
   })
   
@@ -152,8 +152,8 @@ server <- function(input, output) {
   output$formula <- renderText({
     print("The calculation of Body Mass
           Index(BMI) is based on the famous formula BMI = weight,kg/(height,cm/100)^2, and Body Surface Area(BSA) is generally refered to the Mosteller formula, in which 
-          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. However, we also provide some alternations for the situation of different genders, in which 
-          the BSA for Female = 0.0073× height,cm + 0.0127× weight,kg -0.2106 and BSA for male = 0.0057× height,cm +0.0121 × weight,kg +0.0882.")
+          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. However, we also provide some alternations for the situation of different genders refered to the Songshan Zhao's formula, in which 
+          the BSA for Female = 0.00586× height,cm + 0.0126× weight,kg -0.0461 and BSA for male = 0.00607× height,cm +0.0127 × weight,kg -0.0698.")
   })
   
   output$references <- renderText({
