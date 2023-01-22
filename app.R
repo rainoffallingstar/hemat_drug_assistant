@@ -128,9 +128,11 @@ server <- function(input, output) {
   })
   
   side_effect_table <- reactive({
-     side_effect_database <- read_excel(paste0(getwd(),"/data/side_effect.xlsx"))
-     side_effect_database[rownames(regimen()),]
-     
+    regimen <- regimen()
+    drug_list <- regimen[["药名"]]
+    side_effect_database <- read_excel(paste0(getwd(),"/data/side_effect.xlsx")) %>% 
+      filter(药名 %in% drug_list)
+    
   })
   
   output$table1 <- renderTable({
