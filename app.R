@@ -59,8 +59,8 @@ ui <- fluidPage(
           tabPanel("Recommendation", 
                    tableOutput("table1"),
                    tableOutput("table2")),
-           #tabPanel("Reference",
-            #        tableOutput("table3")),
+          tabPanel("SideEffects",
+                    tableOutput("table3")),
           tabPanel("About me",
                    textOutput("about"),
                    textOutput("formula"),
@@ -127,6 +127,12 @@ server <- function(input, output) {
     df <- df2 
   })
   
+  side_effect_table <- reactive({
+     side_effect_database <- read_excel(paste0(getwd(),"/data/side_effect.xlsx"))
+     side_effect_database[rownames(regimen()),]
+     
+  })
+  
   output$table1 <- renderTable({
     data.frame(Weight = input$weight,
                Height = input$height,
@@ -139,9 +145,9 @@ server <- function(input, output) {
       select(-"类型")
   })
   
-  #output$table3 <- renderTable({
-   # regimen()
-  #})
+  output$table3 <- renderTable({
+    side_effect_table()
+  })
   
   output$about <- renderText({
    
