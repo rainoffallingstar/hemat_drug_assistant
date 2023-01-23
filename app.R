@@ -165,8 +165,8 @@ server <- function(input, output) {
   })
   
   output$references <- renderText({
-    print(" In addition, the citated drug does and regimens are taken from an chinese clinical handbook named 
-          [血液科临床处方手册]")
+    print(" In addition, the citated drug does and regimens are mainly taken from an chinese clinical handbook named 
+          [血液科临床处方手册]，USMLE Step 1&2 and BRS Pharmacology.")
   })
   
   output$plt <- renderPlot({
