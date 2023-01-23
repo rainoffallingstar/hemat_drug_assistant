@@ -115,11 +115,14 @@ server <- function(input, output) {
     for (i in 1:nrow(df2)) {
       if (df2[i,2] == "monoclone"){
         df2[i,4] = df2[i,4]+ df2[i,3]
-      }else if (df2[i,2] == "weight"){
+      }else if (df2[i,3] != 0 & df2[i,2] == "weight"){
         df2[i,4] = df2[i,3] * as.numeric(input$weight)
-      }else if (df2[i,3] == 0) {
+      }else if (df2[i,3] == 0 & df2[i,2] != "monoclone" & df2[i,2] != "weight") {
         df2[i,5] = df2[i,5] * bsa
         df2[i,6] = df2[i,6] * bsa
+      }else if (df2[i,3] == 0 & df2[i,2] == "weight"){
+        df2[i,5] = df2[i,5] * as.numeric(input$weight)
+        df2[i,6] = df2[i,6] * as.numeric(input$weight)
       } else {
         df2[i,4] = df2[i,3] * bsa
       }
@@ -166,7 +169,7 @@ server <- function(input, output) {
   
   output$references <- renderText({
     print(" In addition, the citated drug does and regimens are mainly taken from an chinese clinical handbook named 
-          [血液科临床处方手册]，USMLE Step 1&2 and BRS Pharmacology.")
+          [血液科临床处方手册]，Uptodate，USMLE Step 1&2 and BRS Pharmacology.")
   })
   
   output$plt <- renderPlot({
