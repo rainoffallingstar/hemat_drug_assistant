@@ -73,11 +73,6 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-          materialSwitch(
-            inputId = "Id078",
-            label = "Chinese Mod",
-            value = TRUE, 
-            status = "danger"),
           textInput("weight",
                     "Weight(KG)",
                     "50"),
@@ -96,7 +91,14 @@ ui <- fluidPage(
             inline = TRUE, 
             status = "danger",
             fill = TRUE
+          ),
+          switchInput(
+            inputId = "Id078",
+            onLabel = "En",
+            offLabel = "Zh"
           )
+          
+          
         ),
 
         # Show a plot of the generated distribution
@@ -143,7 +145,7 @@ server <- function(input, output) {
     }
   })
   mod <-reactive({
-    if (input$Id078 == TRUE){
+    if (input$Id078 == FALSE){
       mod = 1
     }else{
       mod = 2
