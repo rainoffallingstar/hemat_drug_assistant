@@ -8,6 +8,7 @@ library(shinyWidgets)
 library(readxl)
 library(fs)
 library(dplyr)
+library(stringr)
 
 # Define UI for application that draws a histogram
 disease_list <- list()
@@ -24,6 +25,43 @@ for (i in 1:length(disease_names)){
 }
 names(disease_list) <-disease_names
 
+# define  functions to process the strings in the excel files
+# make all drug names display in the same way
+database <- read_excel("data/standerd_drug_names.xlsx")
+get_druglist_title <- function(x,y,z) {
+  raw_data <- x
+  for (i in 1:nrow(raw_data)){
+    if (str_detect(raw_data[i,y],"[\\p{Han}]")){
+      id <- grep(raw_data[i,y],database$药名)
+    }else{
+      id <- grep(raw_data[i,y],database$Drugs)
+    }
+    
+    if (is.na(id[1])){
+      raw_data[i,y] <- raw_data[i,y]
+      #database <- rbind(database,data.frame(药名_zh = raw_data[i,y],Drugs_en = NA,
+       #                                     副作用/SideEffect = NA, 
+        #                                    可能的解救措施/Measures = NA))
+    }else {
+      raw_data[i,y] <- database[id[1],z] %>% 
+        str_to_lower() %>% 
+        str_to_sentence()
+    }
+    
+  }
+  return(raw_data)
+}
+
+update_druglist_title <- function(x,y) {
+  raw_data <- x
+  for (i in 1:nrow(raw_data)){
+    raw_data[i,y] <- raw_data[i,y] %>% 
+      str_to_lower() %>% 
+      str_to_sentence()
+  }
+  return(raw_data)
+}
+
 ui <- fluidPage(
 
     # Application title
@@ -32,6 +70,11 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+          materialSwitch(
+            inputId = "Id078",
+            label = "Chinese Mod",
+            value = TRUE, 
+            status = "danger"),
           textInput("weight",
                     "Weight(KG)",
                     "50"),
@@ -96,7 +139,13 @@ server <- function(input, output) {
       0.00607 * h + 0.0127 * w - 0.0698
     }
   })
-  
+  mod <-reactive({
+    if (input$Id078 == TRUE){
+      mod = 1
+    }else{
+      mod = 2
+    }
+  })
   regimen <- reactive({
     n=1
     drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
@@ -104,9 +153,12 @@ server <- function(input, output) {
       n = n+1
       drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
     }
+    
     read_excel(drug_path,
                col_types = c("text", "text", "numeric", 
-                              "numeric", "numeric", "numeric", "text"))
+                              "numeric", "numeric", "numeric", "text")) %>% 
+      get_druglist_title(1,mod()) 
+   
   })
   
   calculate_regimen <- reactive({
@@ -133,9 +185,21 @@ server <- function(input, output) {
   side_effect_table <- reactive({
     regimen <- regimen()
     drug_list <- regimen[["药名"]]
-    side_effect_database <- read_excel(paste0(getwd(),"/data/side_effect.xlsx")) %>% 
-      filter(药名 %in% drug_list)
+    if (mod() == 1){
+      side_effect_database <- database %>% 
+        update_druglist_title(mod()) %>% 
+        filter( 药名 %in% drug_list) %>% 
+        select(药名,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        distinct()
+    }else{
+      side_effect_database <- database %>% 
+        update_druglist_title(mod()) %>% 
+        filter( Drugs %in% drug_list) %>% 
+        select(Drugs,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        distinct()
+    }
     
+    side_effect <-  side_effect_database 
   })
   
   output$table1 <- renderTable({
