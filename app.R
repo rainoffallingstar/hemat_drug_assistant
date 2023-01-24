@@ -8,6 +8,7 @@ library(shinyWidgets)
 library(readxl)
 library(fs)
 library(dplyr)
+library(stringr)
 
 # Define UI for application that draws a histogram
 disease_list <- list()
@@ -23,6 +24,46 @@ for (i in 1:length(disease_names)){
   disease_list[[i]] <- filelist
 }
 names(disease_list) <-disease_names
+
+# define  functions to process the strings in the excel files
+# make all drug names display in the same way
+update_druglist_title <- function(x,y) {
+  raw_data <- x
+  for (i in 1:nrow(raw_data)){
+    raw_data[i,y] <- raw_data[i,y] %>% 
+      str_to_lower() %>% 
+      str_to_sentence()
+  }
+  return(raw_data)
+}
+database <- read_excel("data/standerd_drug_names.xlsx") %>% 
+  update_druglist_title(1) %>% 
+  update_druglist_title(2)
+                          
+  
+get_druglist_title <- function(x,y,z) {
+  raw_data <- x
+  for (i in 1:nrow(raw_data)){
+    if (str_detect(raw_data[i,y],"[\\p{Han}]")){
+      id <- grep(raw_data[i,y],database$药名)
+    }else{
+      pro <- raw_data[i,y] %>% 
+        str_to_lower() %>% 
+        str_to_sentence()
+      id <- grep(pro,database$Drugs)
+    }
+    
+    if (is.na(id[1])){
+      raw_data[i,y] <- raw_data[i,y]
+    }else {
+      raw_data[i,y] <- database[id[1],z] 
+    }
+    
+  }
+  return(raw_data)
+}
+
+
 
 ui <- fluidPage(
 
@@ -50,7 +91,14 @@ ui <- fluidPage(
             inline = TRUE, 
             status = "danger",
             fill = TRUE
+          ),
+          switchInput(
+            inputId = "Id078",
+            onLabel = "En",
+            offLabel = "中"
           )
+          
+          
         ),
 
         # Show a plot of the generated distribution
@@ -58,7 +106,8 @@ ui <- fluidPage(
           tabsetPanel(
           tabPanel("Recommendation", 
                    tableOutput("table1"),
-                   tableOutput("table2")),
+                   tableOutput("table2"),
+                   textOutput("warn")),
           tabPanel("SideEffects",
                     tableOutput("table3")),
           tabPanel("About me",
@@ -96,7 +145,13 @@ server <- function(input, output) {
       0.00607 * h + 0.0127 * w - 0.0698
     }
   })
-  
+  mod <-reactive({
+    if (input$Id078 == FALSE){
+      mod = 1
+    }else{
+      mod = 2
+    }
+  })
   regimen <- reactive({
     n=1
     drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
@@ -104,9 +159,12 @@ server <- function(input, output) {
       n = n+1
       drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
     }
+    
     read_excel(drug_path,
                col_types = c("text", "text", "numeric", 
-                              "numeric", "numeric", "numeric", "text"))
+                              "numeric", "numeric", "numeric", "text")) %>% 
+      get_druglist_title(1,mod()) 
+   
   })
   
   calculate_regimen <- reactive({
@@ -133,21 +191,54 @@ server <- function(input, output) {
   side_effect_table <- reactive({
     regimen <- regimen()
     drug_list <- regimen[["药名"]]
-    side_effect_database <- read_excel(paste0(getwd(),"/data/side_effect.xlsx")) %>% 
-      filter(药名 %in% drug_list)
+    if (mod() == 1){
+      side_effect_database <- database %>% 
+        update_druglist_title(mod()) %>% 
+        filter( 药名 %in% drug_list) %>% 
+        select(药名,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        distinct()
+      colnames(side_effect_database) <- c("药名","副作用","可能的解救措施")
+    }else{
+      side_effect_database <- database %>% 
+        update_druglist_title(mod()) %>% 
+        filter( Drugs %in% drug_list) %>% 
+        select(Drugs,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        distinct()
+      colnames(side_effect_database) <- c("Drugs","Side Effects","Measures")
+    }
     
+    side_effect <-  side_effect_database 
   })
   
   output$table1 <- renderTable({
-    data.frame(Weight = input$weight,
-               Height = input$height,
-               BMI = bmi(),
-               BSA = bsa())
+    if (mod() == 1){
+      data.frame(体重 = input$weight,
+                 身高 = input$height,
+                 身体质量指数 = bmi(),
+                 人体表面面积 = bsa())
+    } else{
+      data.frame(Weight = input$weight,
+                 Height = input$height,
+                 BMI = bmi(),
+                 BSA = bsa())
+    }
+    
   })
   
   output$table2 <- renderTable({
+    if (mod() == 1){
     as.data.frame(calculate_regimen()) %>% 
       select(-"类型")
+    }else{
+      df <- as.data.frame(calculate_regimen()) %>% 
+        select(-"类型")
+      colnames(df) <- c("Drugs","Guidline Dose(mg/m2)","Calculation","Min Dose",
+                        "Max Dose","Unit")
+      df <- df
+    }
+  })
+  output$warn <- renderText({
+    print("*Warning:This application is under active development for hematological professionals,please check the regimens carefully before making it a part of routine clinical operations and desicion-making process.")
   })
   
   output$table3 <- renderTable({

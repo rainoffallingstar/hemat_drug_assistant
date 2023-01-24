@@ -1,6 +1,7 @@
 library(readxl)
 library(fs)
 library(dplyr)
+library(xlsx)
 
 disease_list <- list()
 disease_names<- list.dirs(paste0(getwd(), "/data/"),
@@ -17,11 +18,24 @@ for (i in 1:length(disease_names)){
 names(disease_list) <-disease_names
 db <- data.frame()
 
+usual_error <- read_excel("data/usual_error.xlsx")
+names_normalized <- function(x,y){
+  df <- x
+  for (c in 1:nrow(df)){
+    correct_str <- usual_error %>% filter(zh %in% df[c,y])
+    df[c,y] <- correct_str[1,2]
+      
+    }
+  }
+
 for (i in 1:length(disease_names)) {
   for (a in 1:length(disease_list[[i]])) {
-    dbs <- read_excel(paste0(getwd(),"/data/",names(disease_list)[i],
-                             "/",disease_list[[i]][a], ".xlsx")) 
-    db <- rbind(db,dbs[,1])
+    filedir <- paste0(getwd(),"/data/",names(disease_list)[i],
+                      "/",disease_list[[i]][a], ".xlsx")
+    dbs <- read_excel(filedir) %>% 
+      names_normalized(1)
+    write.xlsx(dbs, paste0(getwd(),"/newdata/",names(disease_list)[i],
+                           "/",disease_list[[i]][a], ".xlsx"))
   }
   
 }
