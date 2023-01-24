@@ -95,7 +95,7 @@ ui <- fluidPage(
           switchInput(
             inputId = "Id078",
             onLabel = "En",
-            offLabel = "Zh"
+            offLabel = "中"
           )
           
           
@@ -106,7 +106,8 @@ ui <- fluidPage(
           tabsetPanel(
           tabPanel("Recommendation", 
                    tableOutput("table1"),
-                   tableOutput("table2")),
+                   tableOutput("table2"),
+                   textOutput("warn")),
           tabPanel("SideEffects",
                     tableOutput("table3")),
           tabPanel("About me",
@@ -235,6 +236,9 @@ server <- function(input, output) {
                         "Max Dose","Unit")
       df <- df
     }
+  })
+  output$warn <- renderText({
+    print("*Warning:This application is under active development for hematological professionals,please check the regimens carefully before making it a part of routine clinical operations and desicion-making process.")
   })
   
   output$table3 <- renderTable({
