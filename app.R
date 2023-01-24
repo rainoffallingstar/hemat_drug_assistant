@@ -27,31 +27,6 @@ names(disease_list) <-disease_names
 
 # define  functions to process the strings in the excel files
 # make all drug names display in the same way
-database <- read_excel("data/standerd_drug_names.xlsx")
-get_druglist_title <- function(x,y,z) {
-  raw_data <- x
-  for (i in 1:nrow(raw_data)){
-    if (str_detect(raw_data[i,y],"[\\p{Han}]")){
-      id <- grep(raw_data[i,y],database$药名)
-    }else{
-      id <- grep(raw_data[i,y],database$Drugs)
-    }
-    
-    if (is.na(id[1])){
-      raw_data[i,y] <- raw_data[i,y]
-      #database <- rbind(database,data.frame(药名_zh = raw_data[i,y],Drugs_en = NA,
-       #                                     副作用/SideEffect = NA, 
-        #                                    可能的解救措施/Measures = NA))
-    }else {
-      raw_data[i,y] <- database[id[1],z] %>% 
-        str_to_lower() %>% 
-        str_to_sentence()
-    }
-    
-  }
-  return(raw_data)
-}
-
 update_druglist_title <- function(x,y) {
   raw_data <- x
   for (i in 1:nrow(raw_data)){
@@ -61,6 +36,34 @@ update_druglist_title <- function(x,y) {
   }
   return(raw_data)
 }
+database <- read_excel("data/standerd_drug_names.xlsx") %>% 
+  update_druglist_title(1) %>% 
+  update_druglist_title(2)
+                          
+  
+get_druglist_title <- function(x,y,z) {
+  raw_data <- x
+  for (i in 1:nrow(raw_data)){
+    if (str_detect(raw_data[i,y],"[\\p{Han}]")){
+      id <- grep(raw_data[i,y],database$药名)
+    }else{
+      pro <- raw_data[i,y] %>% 
+        str_to_lower() %>% 
+        str_to_sentence()
+      id <- grep(pro,database$Drugs)
+    }
+    
+    if (is.na(id[1])){
+      raw_data[i,y] <- raw_data[i,y]
+    }else {
+      raw_data[i,y] <- database[id[1],z] 
+    }
+    
+  }
+  return(raw_data)
+}
+
+
 
 ui <- fluidPage(
 
@@ -191,27 +194,45 @@ server <- function(input, output) {
         filter( 药名 %in% drug_list) %>% 
         select(药名,"副作用/SideEffect","可能的解救措施/Measures") %>% 
         distinct()
+      colnames(side_effect_database) <- c("药名","副作用","可能的解救措施")
     }else{
       side_effect_database <- database %>% 
         update_druglist_title(mod()) %>% 
         filter( Drugs %in% drug_list) %>% 
         select(Drugs,"副作用/SideEffect","可能的解救措施/Measures") %>% 
         distinct()
+      colnames(side_effect_database) <- c("Drugs","Side Effects","Measures")
     }
     
     side_effect <-  side_effect_database 
   })
   
   output$table1 <- renderTable({
-    data.frame(Weight = input$weight,
-               Height = input$height,
-               BMI = bmi(),
-               BSA = bsa())
+    if (mod() == 1){
+      data.frame(体重 = input$weight,
+                 身高 = input$height,
+                 身体质量指数 = bmi(),
+                 人体表面面积 = bsa())
+    } else{
+      data.frame(Weight = input$weight,
+                 Height = input$height,
+                 BMI = bmi(),
+                 BSA = bsa())
+    }
+    
   })
   
   output$table2 <- renderTable({
+    if (mod() == 1){
     as.data.frame(calculate_regimen()) %>% 
       select(-"类型")
+    }else{
+      df <- as.data.frame(calculate_regimen()) %>% 
+        select(-"类型")
+      colnames(df) <- c("Drugs","Guidline Dose(mg/m2)","Calculation","Min Dose",
+                        "Max Dose","Unit")
+      df <- df
+    }
   })
   
   output$table3 <- renderTable({
