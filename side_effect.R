@@ -1,7 +1,7 @@
 library(readxl)
 library(fs)
 library(dplyr)
-library(xlsx)
+#library(xlsx)
 
 disease_list <- list()
 disease_names<- list.dirs(paste0(getwd(), "/data/"),
