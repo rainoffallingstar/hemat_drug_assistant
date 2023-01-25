@@ -9,6 +9,19 @@ library(readxl)
 library(fs)
 library(dplyr)
 library(stringr)
+library(shinymanager)
+
+# dataframe that holds usernames, passwords and other user data
+credentials <- data.frame(
+  user = c("guest", "fallingstar"), # mandatory
+  password = c("guest", "fallingstar"), # mandatory
+  start = c("2019-04-15"), # optinal (all others)
+  expire = c(NA, "2029-12-31"),
+  admin = c(FALSE, TRUE),
+  comment = "Simple and secure authentification mechanism 
+  for single ‘Shiny’ applications.",
+  stringsAsFactors = FALSE
+)
 
 # Define UI for application that draws a histogram
 disease_list <- list()
@@ -66,7 +79,6 @@ get_druglist_title <- function(x,y,z) {
 
 
 ui <- fluidPage(
-
     # Application title
     titlePanel("Hematological Drug Assistant"),
 
@@ -121,9 +133,16 @@ ui <- fluidPage(
     )
 )
 
+ui <- secure_app(ui)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+  # call the server part
+  # check_credentials returns a function to authenticate users
+  res_auth <- secure_server(
+    check_credentials = check_credentials(credentials)
+  )
   
   bmi <- reactive({
     w <- as.numeric(input$weight)
@@ -209,7 +228,7 @@ server <- function(input, output) {
     
     side_effect <-  side_effect_database 
   })
-  
+  # your classic server logic
   output$table1 <- renderTable({
     if (mod() == 1){
       data.frame(体重 = input$weight,
