@@ -5,6 +5,7 @@
 
 library(shiny)
 library(shinyWidgets)
+library("shinythemes")
 library(readxl)
 library(fs)
 library(dplyr)
@@ -219,8 +220,8 @@ server <- function(input, output) {
     } else{
       data.frame(Weight = input$weight,
                  Height = input$height,
-                 BMI = bmi(),
-                 BSA = bsa())
+                 BodyMassIndex = bmi(),
+                 BodySurfaceArea = bsa())
     }
     
   })
@@ -232,7 +233,7 @@ server <- function(input, output) {
     }else{
       df <- as.data.frame(calculate_regimen()) %>% 
         select(-"类型")
-      colnames(df) <- c("Drugs","Guidline Dose(mg/m2)","Calculation","Min Dose",
+      colnames(df) <- c("Drugs","Guideline Dose(mg/m2)","Calculation","Min Dose",
                         "Max Dose","Unit")
       df <- df
     }
