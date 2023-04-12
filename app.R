@@ -5,7 +5,7 @@
 
 library(shiny)
 library(shinyWidgets)
-library(shinythemes)
+library("shinythemes")
 library(readxl)
 library(fs)
 library(dplyr)
@@ -66,7 +66,7 @@ get_druglist_title <- function(x,y,z) {
 
 
 
-ui <- fluidPage(theme = shinytheme("journal"),
+ui <- fluidPage(
 
     # Application title
     titlePanel("Hematological Drug Assistant"),
