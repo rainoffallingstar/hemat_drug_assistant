@@ -91,7 +91,7 @@ switch_fun <- function(x,y,z){
 }
 
 
-ui <- fluidPage(theme = shinytheme("cerulean"),
+ui <- fluidPage(theme = shinytheme("journal"),
 
     # Application title
     titlePanel(title = uiOutput("titlepan")),
@@ -100,20 +100,20 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
     sidebarLayout(
         sidebarPanel(
           textInput("weight",
-                    "Weight(KG)",
+                    "体重(KG)",
                     "50"),
           textInput("height",
-                    "Height(CM)",
+                    "身高(CM)",
                     "170"),
           pickerInput("regimens",
-                      "Regimens Selected",
+                      "选择方案",
                       selected = "R-CHOP",
                       choices = disease_list
           ),
           prettyRadioButtons(
             inputId = "gender",
-            label = "Choose Gender:", 
-            choices = c("Common", "Female", "Male"),
+            label = "选择性别:", 
+            choices = c("通用", "女性", "男性"),
             inline = TRUE, 
             status = "danger",
             fill = TRUE
