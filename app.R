@@ -65,17 +65,17 @@ get_druglist_title <- function(x,y,z) {
 }
 
 # Define a function to switch all text on the interface between Chinese and English
-switch_language <- function(lang) {
+switch_language <- function(lang,y) {
   if (lang == "Chinese") {
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", "50")
     updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = "R-CHOP", choices = disease_list)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = y, choices = disease_list)
     updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", choices = c("通用", "女性", "男性"))
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   } else {
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", "50")
     updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = "R-CHOP", choices = disease_list)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = y, choices = disease_list)
     updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:", choices = c("Common", "Female", "Male"))
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   }
@@ -155,9 +155,9 @@ server <- function(input, output) {
   # Switch language when button is clicked
   observeEvent(input$Id078, {
     if (input$Id078 == TRUE) {
-      switch_language("English")
+      switch_language("English",input$regimens)
     } else {
-      switch_language("Chinese")
+      switch_language("Chinese",input$regimens)
     }
   })
   output$titlepan = renderText({
@@ -298,7 +298,7 @@ server <- function(input, output) {
   
   output$about <- renderText({
     if (mod() == 1){
-      print(paste("本应用程序由中国医科大学附属第一医院血液科的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
+      print(paste("本应用程序由CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
     } else {
       print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
     }
