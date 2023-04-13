@@ -5,7 +5,7 @@
 
 library(shiny)
 library(shinyWidgets)
-library("shinythemes")
+library(shinythemes)
 library(readxl)
 library(fs)
 library(dplyr)
@@ -64,12 +64,37 @@ get_druglist_title <- function(x,y,z) {
   return(raw_data)
 }
 
+# Define a function to switch all text on the interface between Chinese and English
+switch_language <- function(lang) {
+  if (lang == "Chinese") {
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", "50")
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", "170")
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = "R-CHOP", choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", choices = c("通用", "女性", "男性"))
+    updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
+  } else {
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", "50")
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", "170")
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = "R-CHOP", choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:", choices = c("Common", "Female", "Male"))
+    updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
+  }
+}
+
+switch_fun <- function(x,y,z){
+  if (x == TRUE){
+    result = y
+  }else {
+    result = z
+  }
+  return(result)
+}
 
 
-ui <- fluidPage(
+ui <- fluidPage(theme = shinytheme("cerulean"),
 
     # Application title
-    titlePanel("Hematological Drug Assistant"),
+    titlePanel(title = uiOutput("titlepan")),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -98,6 +123,7 @@ ui <- fluidPage(
             onLabel = "En",
             offLabel = "中"
           )
+         
           
           
         ),
@@ -105,13 +131,13 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
           tabsetPanel(
-          tabPanel("Recommendation", 
+          tabPanel(title = uiOutput("Recommendation"), 
                    tableOutput("table1"),
                    tableOutput("table2"),
                    textOutput("warn")),
-          tabPanel("SideEffects",
+          tabPanel(title = uiOutput("SideEffects"),
                     tableOutput("table3")),
-          tabPanel("About me",
+          tabPanel(title = uiOutput("Aboutme"),
                    textOutput("about"),
                    textOutput("formula"),
                    textOutput("references"),
@@ -126,6 +152,28 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+  # Switch language when button is clicked
+  observeEvent(input$Id078, {
+    if (input$Id078 == TRUE) {
+      switch_language("English")
+    } else {
+      switch_language("Chinese")
+    }
+  })
+  output$titlepan = renderText({
+    switch_fun(input$Id078, "Hematological Drug Assistant","血液科用药助手") 
+  })
+  output$Recommendation = renderText({
+    switch_fun(input$Id078, "Recommendation","方案推荐") 
+  })
+  output$SideEffects = renderText({
+    switch_fun(input$Id078, "SideEffects", "药物副作用") 
+  })
+  output$Aboutme = renderText({
+    switch_fun(input$Id078, "About me","关于我") 
+  })
+  
+  
   bmi <- reactive({
     w <- as.numeric(input$weight)
     h <- as.numeric(input$height)
@@ -136,9 +184,9 @@ server <- function(input, output) {
     # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
     w <- as.numeric(input$weight)
     h <- as.numeric(input$height)
-    if (input$gender == "Common"){
+    if (input$gender == "Common" | input$gender == "通用" ){
       (h * w / 3600)^0.5
-    } else if (input$gender == "Female"){
+    } else if (input$gender == "Female" | input$gender == "女性" ){
     #0.00586×身高（cm）+0.0126×体重（kg）-0.0461
       0.00586 * h + 0.0126 * w - 0.0461
     } else{
@@ -147,12 +195,10 @@ server <- function(input, output) {
     }
   })
   mod <-reactive({
-    if (input$Id078 == FALSE){
-      mod = 1
-    }else{
-      mod = 2
-    }
+    switch_fun(input$Id078,2,1)
   })
+  
+  
   regimen <- reactive({
     n=1
     drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
@@ -239,7 +285,11 @@ server <- function(input, output) {
     }
   })
   output$warn <- renderText({
-    print("*Warning:This application is under active development for hematological professionals,please check the regimens carefully before making it a part of routine clinical operations and desicion-making process.")
+    if (mod() == 1){
+      print("*警告：该应用程序正在面向血液学专业人员积极开发中，请在将其纳入日常临床操作和决策过程之前仔细检查方案内容。")
+    } else {
+      print("*Warning:This application is under active development for hematological professionals,please check the regimens carefully before making it a part of routine clinical operations and desicion-making process.")
+    }
   })
   
   output$table3 <- renderTable({
@@ -247,21 +297,30 @@ server <- function(input, output) {
   })
   
   output$about <- renderText({
-   
-    print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
-  }
-  )
+    if (mod() == 1){
+      print(paste("本应用程序由中国医科大学附属第一医院血液科的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
+    } else {
+      print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
+    }
+  })
   
   output$formula <- renderText({
-    print("The calculation of Body Mass
-          Index(BMI) is based on the famous formula BMI = weight,kg/(height,cm/100)^2, and Body Surface Area(BSA) is generally refered to the Mosteller formula, in which 
-          m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. However, we also provide some alternations for the situation of different genders refered to the Songshan Zhao's formula, in which 
-          the BSA for Female = 0.00586× height,cm + 0.0126× weight,kg -0.0461 and BSA for male = 0.00607× height,cm +0.0127 × weight,kg -0.0698.")
+    if (mod() == 1){
+      print("身体质量指数（BMI）的计算基于著名的公式BMI = 体重，kg /（身高，cm / 100）^ 2，而身体表面积（BSA）通常是指Mosteller公式，其中m2 = [身高，cm x 体重，kg / 3600] ^ 1/2。但是，我们还提供了一些针对不同性别情况的替代方案，参考了Songshan Zhao的公式，其中女性的BSA = 0.00586×身高，cm + 0.0126×体重，kg-0.0461，男性的BSA = 0.00607×身高，cm +0.0127×体重，kg-0.0698。")
+    } else {
+      print("The calculation of Body Mass Index(BMI) is based on the famous formula BMI = weight,kg/(height,cm/100)^2, and Body Surface Area(BSA) is generally refered to the Mosteller formula, in which m2 = [ Height, cm x Weight, kg  / 3600 ]^1/2. However, we also provide some alternations for the situation of different genders refered to the Songshan Zhao's formula, in which the BSA for Female = 0.00586× height,cm + 0.0126× weight,kg -0.0461 and BSA for male = 0.00607× height,cm +0.0127 × weight,kg -0.0698.")
+    }
   })
   
   output$references <- renderText({
-    print(" In addition, the citated drug does and regimens are mainly taken from an chinese regimens handbook for clinical hematology，Uptodate，USMLE Step 1&2 and BRS Pharmacology.")
+    if (mod() == 1){
+      print("此外，引用的药物剂量和方案主要来自于中国临床血液学方案手册，Uptodate，USMLE Step 1＆2和BRS药理学。")
+    } else {
+      print(" In addition, the citated drug does and regimens are mainly taken from an chinese regimens handbook for clinical hematology，Uptodate，USMLE Step 1&2 and BRS Pharmacology.")
+    }
   })
+
+
   
   output$plt <- renderPlot({
     img <- jpeg::readJPEG(paste0(getwd(),"/image/logo.jpg"))
