@@ -40,6 +40,7 @@ update_druglist_title <- function(x,y) {
 database <- read_excel("data/standerd_drug_names.xlsx") %>% 
   update_druglist_title(1) %>% 
   update_druglist_title(2)
+agvhd <- read_excel("data/agvhd.xlsx")
                           
   
 get_druglist_title <- function(x,y,z) {
@@ -64,19 +65,28 @@ get_druglist_title <- function(x,y,z) {
   return(raw_data)
 }
 
+gender_db <- data.frame(Chinese = c("通用", "女性", "男性"),
+                        English = c("Common", "Female", "Male"))
+
 # Define a function to switch all text on the interface between Chinese and English
-switch_language <- function(lang) {
+switch_language <- function(lang,input_weight,input_height,input_regimens,input_genders) {
+  
   if (lang == "Chinese") {
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", "50")
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = "R-CHOP", choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", choices = c("通用", "女性", "男性"))
+    
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = input_regimens, choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", 
+                             selected = input_genders,
+                             choiceNames = gender_db$Chinese, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   } else {
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", "50")
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = "R-CHOP", choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:", choices = c("Common", "Female", "Male"))
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:",
+                              selected = input_genders,
+                             choiceNames = gender_db$English, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   }
 }
@@ -113,10 +123,12 @@ ui <- fluidPage(theme = shinytheme("journal"),
           prettyRadioButtons(
             inputId = "gender",
             label = "选择性别:", 
-            choices = c("通用", "女性", "男性"),
+            selected = "通用",
             inline = TRUE, 
             status = "danger",
-            fill = TRUE
+            fill = TRUE,
+            choiceNames = gender_db$Chinese,
+            choiceValues = gender_db$Chinese
           ),
           switchInput(
             inputId = "Id078",
@@ -142,7 +154,114 @@ ui <- fluidPage(theme = shinytheme("journal"),
                    textOutput("formula"),
                    textOutput("references"),
                    plotOutput("plt")
-                  )
+                  ),
+          tabPanel(title = uiOutput("Survey"),
+                   fluidRow(
+                     column(12,
+                            h3("aGVHD Survey"),
+                            br(),
+                            prettyRadioButtons(
+                              inputId = "skin",
+                              label = "皮肤：", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = agvhd$skin,
+                              choiceValues = agvhd$grade
+                            ),
+                            br(),
+                            prettyRadioButtons(
+                              inputId = "liver",
+                              label = "肝脏：", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = agvhd$liver,
+                              choiceValues = agvhd$grade
+                            ),
+                            br(),
+                            prettyRadioButtons(
+                              inputId = "gastric",
+                              label = "胃肠道：", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = agvhd$gastric,
+                              choiceValues = agvhd$grade
+                            ),
+                            actionButton("submit", "Submit")
+                     ),
+                     textOutput("grade")
+                   )
+          ),
+          tabPanel(title = uiOutput("Survey2"),
+                   fluidRow(
+                     column(12,
+                            h3("IPI Lyphoma Survey"),
+                            br(),
+                            prettyRadioButtons(
+                              inputId = "age",
+                              label = "年龄：", 
+                              selected = "0",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("<= 60y","> 60y"),
+                              choiceValues = c(0,1)
+                            ),
+                          
+                            prettyRadioButtons(
+                              inputId = "ECOG",
+                              label = "ECOG评分：", 
+                              selected = "0",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("活动能力完全正常","自由活动&一般轻度的体力劳动",
+                                              "自由走动&不能从事任何劳动","轮椅或者卧床为主","卧床不起&生活不能自理","死亡"),
+                              choiceValues = c(0,1,2,3,4,5)
+                            ),
+                          
+                            prettyRadioButtons(
+                              inputId = "ann",
+                              label = "临床分期：", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("I","II","III","IV"),
+                              choiceValues = c(1,2,3,4)
+                            ),
+                        
+                            prettyRadioButtons(
+                              inputId = "out_of_node",
+                              label = "结外器官受侵数目:", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("<= 1","> 1"),
+                              choiceValues = c(0,1)
+                            ),
+                            
+                            prettyRadioButtons(
+                              inputId = "ldh",
+                              label = "LDH:", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("正常","异常"),
+                              choiceValues = c(0,1)
+                            ),
+                            actionButton("submit2", "Submit")
+                     ),
+                     textOutput("grade2")
+                   )
+          )
         )
         )
     )
@@ -155,9 +274,9 @@ server <- function(input, output) {
   # Switch language when button is clicked
   observeEvent(input$Id078, {
     if (input$Id078 == TRUE) {
-      switch_language("English")
+      switch_language("English",input$weight,input$height,input$regimens, input$gender)
     } else {
-      switch_language("Chinese")
+      switch_language("Chinese",input$weight,input$height,input$regimens,input$gender)
     }
   })
   output$titlepan = renderText({
@@ -172,7 +291,12 @@ server <- function(input, output) {
   output$Aboutme = renderText({
     switch_fun(input$Id078, "About me","关于我") 
   })
-  
+  output$Survey = renderText({
+    switch_fun(input$Id078, "Bonus！","彩蛋！") 
+  })
+  output$Survey2 = renderText({
+    switch_fun(input$Id078, "Bigbang！","大爆炸！") 
+  })
   
   bmi <- reactive({
     w <- as.numeric(input$weight)
@@ -298,7 +422,7 @@ server <- function(input, output) {
   
   output$about <- renderText({
     if (mod() == 1){
-      print(paste("本应用程序由中国医科大学附属第一医院血液科的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
+      print(paste("本应用程序由CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
     } else {
       print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
     }
@@ -325,6 +449,61 @@ server <- function(input, output) {
   output$plt <- renderPlot({
     img <- jpeg::readJPEG(paste0(getwd(),"/image/logo.jpg"))
     plot(as.raster(img))
+  })
+  
+  
+  grades <- eventReactive(input$submit, {
+    skin <- as.numeric(input$skin)
+    liver <- as.numeric(input$liver)
+    gastric <- as.numeric(input$gastric)
+    if (skin + liver + gastric == 0){
+      grades = 0
+    }else if (skin + liver + gastric <= 2 &  liver == 0 & gastric == 0){
+      grades = 1
+    }else if (skin == 4 | liver == 4 ){
+      grades = 4
+    } else if (liver == 2 | liver == 3 | gastric == 2 | gastric == 3 | gastric == 4){
+      grades = 3
+    }else {
+      grades = 2
+    }
+    grades
+  
+  })
+  
+  output$grade <- renderText({
+    
+    print(paste("GVHD总分级：",grades()))
+  })
+  
+  IPI_grades <- eventReactive(input$submit2, {
+    age <- as.numeric(input$age)
+    out_of_node <- as.numeric(input$out_of_node)
+    if (as.numeric(input$ECOG)>= 2){
+      p_ECGO <- 1
+    }else {
+      p_ECGO <- 0
+    }
+    if (as.numeric(input$ann)>2){
+      p_ann <- 1
+    }else {
+      p_ann <- 0
+    }
+    IPI_grades <- age + out_of_node + p_ECGO + p_ann + as.numeric(input$ldh)
+  })
+  
+  output$grade2 <- renderText({
+    
+    if (IPI_grades() < 2){
+      print(paste("IPI评分：",IPI_grades(),"分，为低危"))
+    }else if (IPI_grades() == 2){
+      print(paste("IPI评分：",IPI_grades(),"分，为中低危"))
+    }else if (IPI_grades() == 3){
+      print(paste("IPI评分：",IPI_grades(),"分，为中高危"))
+    }else {
+      print(paste("IPI评分：",IPI_grades(),"分，为高危"))
+    }
+    
   })
 }
 
