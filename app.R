@@ -64,19 +64,28 @@ get_druglist_title <- function(x,y,z) {
   return(raw_data)
 }
 
+gender_db <- data.frame(Chinese = c("通用", "女性", "男性"),
+                        English = c("Common", "Female", "Male"))
+
 # Define a function to switch all text on the interface between Chinese and English
-switch_language <- function(lang,y) {
+switch_language <- function(lang,input_weight,input_height,input_regimens,input_genders) {
+  
   if (lang == "Chinese") {
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", "50")
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = y, choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", choices = c("通用", "女性", "男性"))
+    
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = input_regimens, choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", 
+                             selected = input_genders,
+                             choiceNames = gender_db$Chinese, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   } else {
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", "50")
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", "170")
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = y, choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:", choices = c("Common", "Female", "Male"))
+    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
+    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
+    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
+    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:",
+                              selected = input_genders,
+                             choiceNames = gender_db$English, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   }
 }
@@ -113,10 +122,12 @@ ui <- fluidPage(theme = shinytheme("journal"),
           prettyRadioButtons(
             inputId = "gender",
             label = "选择性别:", 
-            choices = c("通用", "女性", "男性"),
+            selected = "通用",
             inline = TRUE, 
             status = "danger",
-            fill = TRUE
+            fill = TRUE,
+            choiceNames = gender_db$Chinese,
+            choiceValues = gender_db$Chinese
           ),
           switchInput(
             inputId = "Id078",
@@ -155,9 +166,9 @@ server <- function(input, output) {
   # Switch language when button is clicked
   observeEvent(input$Id078, {
     if (input$Id078 == TRUE) {
-      switch_language("English",input$regimens)
+      switch_language("English",input$weight,input$height,input$regimens, input$gender)
     } else {
-      switch_language("Chinese",input$regimens)
+      switch_language("Chinese",input$weight,input$height,input$regimens,input$gender)
     }
   })
   output$titlepan = renderText({
