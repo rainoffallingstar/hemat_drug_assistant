@@ -41,6 +41,7 @@ database <- read_excel("data/standerd_drug_names.xlsx") %>%
   update_druglist_title(1) %>% 
   update_druglist_title(2)
 agvhd <- read_excel("data/agvhd.xlsx")
+cart <- read_excel("data/cart.xls")
                           
   
 get_druglist_title <- function(x,y,z) {
@@ -261,7 +262,71 @@ ui <- fluidPage(theme = shinytheme("journal"),
                      ),
                      textOutput("grade2")
                    )
-          )
+          ),
+          tabPanel(title = uiOutput("Survey3"),
+                   fluidRow(
+                     column(12,
+                            h3("CAR-T ICANS Survey"),
+                            br(),
+                            prettyRadioButtons(
+                              inputId = "attention",
+                              label = "定向力（正确数）：年，月，城市，医院", 
+                              selected = "4",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("0","1","2","3","4"),
+                              choiceValues = c(0,1,2,3,4)
+                            ),
+                            
+                            prettyRadioButtons(
+                              inputId = "named",
+                              label = "命名能力（命名数）：说出三件物品的名称（如笔、钟表、按钮）", 
+                              selected = "3",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("0","1","2","3"),
+                              choiceValues = c(0,1,2,3)
+                            ),
+                            
+                            prettyRadioButtons(
+                              inputId = "listen",
+                              label = "听从指挥能力：听从简单指令", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("能","否"),
+                              choiceValues = c(1,0)
+                            ),
+                            
+                            prettyRadioButtons(
+                              inputId = "write",
+                              label = "书写能力:写出一句完整的话", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("能","否"),
+                              choiceValues = c(1,0)
+                            ),
+                            
+                            prettyRadioButtons(
+                              inputId = "count",
+                              label = "计算能力:简单计算或数数", 
+                              selected = "1",
+                              inline = TRUE, 
+                              status = "danger",
+                              fill = TRUE,
+                              choiceNames = c("能","否"),
+                              choiceValues = c(1,0)
+                            ),
+                            actionButton("submit3", "Submit")
+                     ),
+                     tableOutput("grade3")
+                   )
+          ),
         )
         )
     )
@@ -296,6 +361,9 @@ server <- function(input, output) {
   })
   output$Survey2 = renderText({
     switch_fun(input$Id078, "Bigbang！","大爆炸！") 
+  })
+  output$Survey3 = renderText({
+    switch_fun(input$Id078, "CAR-T！","CAR-T！") 
   })
   
   bmi <- reactive({
@@ -492,7 +560,7 @@ server <- function(input, output) {
     IPI_grades <- age + out_of_node + p_ECGO + p_ann + as.numeric(input$ldh)
   })
   
-  output$grade2 <- renderText({
+  output$grade2 <- renderTable({
     
     if (IPI_grades() < 2){
       print(paste("IPI评分：",IPI_grades(),"分，为低危"))
@@ -502,6 +570,25 @@ server <- function(input, output) {
       print(paste("IPI评分：",IPI_grades(),"分，为中高危"))
     }else {
       print(paste("IPI评分：",IPI_grades(),"分，为高危"))
+    }
+    
+  })
+  
+  Ican_grades <- eventReactive(input$submit3, {
+    
+    Ican_grades <- as.numeric(input$count) + as.numeric(input$write) + as.numeric(input$listen) + as.numeric(input$attention) + as.numeric(input$named)
+  })
+  
+  output$grade3 <- renderTable({
+    
+    if (Ican_grades() >= 7){
+      cart[1,]
+    }else if (Ican_grades() >= 3){
+      cart[2,]
+    }else if (Ican_grades() >= 1){
+      cart[3,]
+    }else {
+      cart[4,]
     }
     
   })
