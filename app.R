@@ -14,11 +14,11 @@ library(stringr)
 # Define UI for application that draws a histogram
 disease_list <- list()
 disease_names<- list.dirs(paste0(getwd(), "/data/"),
-                                 full.names = FALSE, recursive = FALSE)
+                          full.names = FALSE, recursive = FALSE)
 
 for (i in 1:length(disease_names)){
   filelist <- list.files(paste0(getwd(), "/data/",disease_names[i],"/"), 
-                                  pattern = ".xlsx", recursive = FALSE)
+                         pattern = ".xlsx", recursive = FALSE)
   for (a in 1:length(filelist) ){
     filelist[a] <- substring(filelist[a],1,nchar(filelist[a])-5)
   }
@@ -42,8 +42,8 @@ database <- read_excel("data/standerd_drug_names.xlsx") %>%
   update_druglist_title(2)
 agvhd <- read_excel("data/agvhd.xlsx")
 cart <- read_excel("data/cart.xls")
-                          
-  
+
+
 get_druglist_title <- function(x,y,z) {
   raw_data <- x
   for (i in 1:nrow(raw_data)){
@@ -86,7 +86,7 @@ switch_language <- function(lang,input_weight,input_height,input_regimens,input_
     updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
     updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
     updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:",
-                              selected = input_genders,
+                             selected = input_genders,
                              choiceNames = gender_db$English, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   }
@@ -103,233 +103,317 @@ switch_fun <- function(x,y,z){
 
 
 ui <- fluidPage(theme = shinytheme("journal"),
-
-    # Application title
-    titlePanel(title = uiOutput("titlepan")),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-          textInput("weight",
-                    "体重(KG)",
-                    "50"),
-          textInput("height",
-                    "身高(CM)",
-                    "170"),
-          pickerInput("regimens",
-                      "选择方案",
-                      selected = "R-CHOP",
-                      choices = disease_list
-          ),
-          prettyRadioButtons(
-            inputId = "gender",
-            label = "选择性别:", 
-            selected = "通用",
-            inline = TRUE, 
-            status = "danger",
-            fill = TRUE,
-            choiceNames = gender_db$Chinese,
-            choiceValues = gender_db$Chinese
-          ),
-          switchInput(
-            inputId = "Id078",
-            onLabel = "En",
-            offLabel = "中"
-          )
-         
-          
-          
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-          tabsetPanel(
-          tabPanel(title = uiOutput("Recommendation"), 
-                   tableOutput("table1"),
-                   tableOutput("table2"),
-                   textOutput("warn")),
-          tabPanel(title = uiOutput("SideEffects"),
-                    tableOutput("table3")),
-          tabPanel(title = uiOutput("Aboutme"),
-                   textOutput("about"),
-                   textOutput("formula"),
-                   textOutput("references"),
-                   plotOutput("plt")
+                
+                # Application title
+                titlePanel(title = uiOutput("titlepan")),
+                
+                # Sidebar with a slider input for number of bins 
+                sidebarLayout(
+                  sidebarPanel(
+                    textInput("weight",
+                              "体重(KG)",
+                              "50"),
+                    textInput("height",
+                              "身高(CM)",
+                              "170"),
+                    pickerInput("regimens",
+                                "选择方案",
+                                selected = "R-CHOP",
+                                choices = disease_list
+                    ),
+                    prettyRadioButtons(
+                      inputId = "gender",
+                      label = "选择性别:", 
+                      selected = "通用",
+                      inline = TRUE, 
+                      status = "danger",
+                      fill = TRUE,
+                      choiceNames = gender_db$Chinese,
+                      choiceValues = gender_db$Chinese
+                    ),
+                    switchInput(
+                      inputId = "Id078",
+                      onLabel = "En",
+                      offLabel = "中"
+                    )
+                    
+                    
+                    
                   ),
-          tabPanel(title = uiOutput("Survey"),
-                   fluidRow(
-                     column(12,
-                            h3("aGVHD Survey"),
-                            br(),
-                            prettyRadioButtons(
-                              inputId = "skin",
-                              label = "皮肤：", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = agvhd$skin,
-                              choiceValues = agvhd$grade
-                            ),
-                            br(),
-                            prettyRadioButtons(
-                              inputId = "liver",
-                              label = "肝脏：", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = agvhd$liver,
-                              choiceValues = agvhd$grade
-                            ),
-                            br(),
-                            prettyRadioButtons(
-                              inputId = "gastric",
-                              label = "胃肠道：", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = agvhd$gastric,
-                              choiceValues = agvhd$grade
-                            ),
-                            actionButton("submit", "Submit")
-                     ),
-                     textOutput("grade")
-                   )
-          ),
-          tabPanel(title = uiOutput("Survey2"),
-                   fluidRow(
-                     column(12,
-                            h3("IPI Lyphoma Survey"),
-                            br(),
-                            prettyRadioButtons(
-                              inputId = "age",
-                              label = "年龄：", 
-                              selected = "0",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("<= 60y","> 60y"),
-                              choiceValues = c(0,1)
-                            ),
-                          
-                            prettyRadioButtons(
-                              inputId = "ECOG",
-                              label = "ECOG评分：", 
-                              selected = "0",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("活动能力完全正常","自由活动&一般轻度的体力劳动",
-                                              "自由走动&不能从事任何劳动","轮椅或者卧床为主","卧床不起&生活不能自理","死亡"),
-                              choiceValues = c(0,1,2,3,4,5)
-                            ),
-                          
-                            prettyRadioButtons(
-                              inputId = "ann",
-                              label = "临床分期：", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("I","II","III","IV"),
-                              choiceValues = c(1,2,3,4)
-                            ),
-                        
-                            prettyRadioButtons(
-                              inputId = "out_of_node",
-                              label = "结外器官受侵数目:", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("<= 1","> 1"),
-                              choiceValues = c(0,1)
-                            ),
-                            
-                            prettyRadioButtons(
-                              inputId = "ldh",
-                              label = "LDH:", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("正常","异常"),
-                              choiceValues = c(0,1)
-                            ),
-                            actionButton("submit2", "Submit")
-                     ),
-                     textOutput("grade2")
-                   )
-          ),
-          tabPanel(title = uiOutput("Survey3"),
-                   fluidRow(
-                     column(12,
-                            h3("CAR-T ICANS Survey"),
-                            br(),
-                            prettyRadioButtons(
-                              inputId = "attention",
-                              label = "定向力（正确数）：年，月，城市，医院", 
-                              selected = "4",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("0","1","2","3","4"),
-                              choiceValues = c(0,1,2,3,4)
-                            ),
-                            
-                            prettyRadioButtons(
-                              inputId = "named",
-                              label = "命名能力（命名数）：说出三件物品的名称（如笔、钟表、按钮）", 
-                              selected = "3",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("0","1","2","3"),
-                              choiceValues = c(0,1,2,3)
-                            ),
-                            
-                            prettyRadioButtons(
-                              inputId = "listen",
-                              label = "听从指挥能力：听从简单指令", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("能","否"),
-                              choiceValues = c(1,0)
-                            ),
-                            
-                            prettyRadioButtons(
-                              inputId = "write",
-                              label = "书写能力:写出一句完整的话", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("能","否"),
-                              choiceValues = c(1,0)
-                            ),
-                            
-                            prettyRadioButtons(
-                              inputId = "count",
-                              label = "计算能力:简单计算或数数", 
-                              selected = "1",
-                              inline = TRUE, 
-                              status = "danger",
-                              fill = TRUE,
-                              choiceNames = c("能","否"),
-                              choiceValues = c(1,0)
-                            ),
-                            actionButton("submit3", "Submit")
-                     ),
-                     tableOutput("grade3")
-                   )
-          ),
-        )
-        )
-    )
+                  
+                  # Show a plot of the generated distribution
+                  mainPanel(
+                    tabsetPanel(
+                      tabPanel(title = uiOutput("Recommendation"), 
+                               tableOutput("table1"),
+                               tableOutput("table2"),
+                               textOutput("warn")),
+                      tabPanel(title = uiOutput("SideEffects"),
+                               tableOutput("table3")),
+                      tabPanel(title = uiOutput("Aboutme"),
+                               textOutput("about"),
+                               textOutput("formula"),
+                               textOutput("references"),
+                               plotOutput("plt")
+                      ),
+                      tabPanel(title = uiOutput("Survey"),
+                               fluidRow(
+                                 column(12,
+                                        h3("aGVHD Survey"),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "skin",
+                                          label = "皮肤：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = agvhd$skin,
+                                          choiceValues = agvhd$grade
+                                        ),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "liver",
+                                          label = "肝脏：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = agvhd$liver,
+                                          choiceValues = agvhd$grade
+                                        ),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "gastric",
+                                          label = "胃肠道：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = agvhd$gastric,
+                                          choiceValues = agvhd$grade
+                                        ),
+                                        actionButton("submit", "Submit")
+                                 ),
+                                 textOutput("grade")
+                               )
+                      ),
+                      tabPanel(title = uiOutput("Survey2"),
+                               fluidRow(
+                                 column(12,
+                                        h3("IPI Lyphoma Survey"),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "age",
+                                          label = "年龄：", 
+                                          selected = "0",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("<= 60y","> 60y"),
+                                          choiceValues = c(0,1)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "ECOG",
+                                          label = "ECOG评分：", 
+                                          selected = "0",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("活动能力完全正常","自由活动&一般轻度的体力劳动",
+                                                          "自由走动&不能从事任何劳动","轮椅或者卧床为主","卧床不起&生活不能自理","死亡"),
+                                          choiceValues = c(0,1,2,3,4,5)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "ann",
+                                          label = "临床分期：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("I","II","III","IV"),
+                                          choiceValues = c(1,2,3,4)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "out_of_node",
+                                          label = "结外器官受侵数目:", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("<= 1","> 1"),
+                                          choiceValues = c(0,1)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "ldh",
+                                          label = "LDH:", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("正常","异常"),
+                                          choiceValues = c(0,1)
+                                        ),
+                                        actionButton("submit2", "Submit")
+                                 ),
+                                 textOutput("grade2")
+                               )
+                      ),
+                      tabPanel(title = uiOutput("Survey3"),
+                               fluidRow(
+                                 column(12,
+                                        h3("CAR-T ICANS Survey"),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "attention",
+                                          label = "定向力（正确数）：年，月，城市，医院", 
+                                          selected = "4",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("0","1","2","3","4"),
+                                          choiceValues = c(0,1,2,3,4)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "named",
+                                          label = "命名能力（命名数）：说出三件物品的名称（如笔、钟表、按钮）", 
+                                          selected = "3",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("0","1","2","3"),
+                                          choiceValues = c(0,1,2,3)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "listen",
+                                          label = "听从指挥能力：听从简单指令", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("能","否"),
+                                          choiceValues = c(1,0)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "write",
+                                          label = "书写能力:写出一句完整的话", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("能","否"),
+                                          choiceValues = c(1,0)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "count",
+                                          label = "计算能力:简单计算或数数", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("能","否"),
+                                          choiceValues = c(1,0)
+                                        ),
+                                        actionButton("submit3", "Submit")
+                                 ),
+                                 tableOutput("grade3")
+                               )
+                      ),
+                      tabPanel(title = uiOutput("Survey4"),
+                               
+                               fluidRow(
+                                 column(12,
+                                        h3("Myeloma Survey"),
+                                        br(),
+                                        prettyRadioButtons(
+                                          inputId = "HGB",
+                                          label = "血红蛋白:", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c(">100 g/L","85-100 g/L","<85 g/L"),
+                                          choiceValues = c(1,2,3)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "Serum_Ca",
+                                          label = "血清钙:", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("≤2.65 mmol/L（11.5 mg/dl)",">2.65 mmol/L（11.5 mg/dl)"),
+                                          choiceValues = c(1,2)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "bone_image",
+                                          label = "骨骼检查：", 
+                                          selected = "3",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("骨骼结构正常或孤立性骨浆细胞瘤","骨骼检查中溶骨病变大于 3 处","其他"),
+                                          choiceValues = c(1,2,3)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "M_protein",
+                                          label = "血清或尿骨髓瘤蛋白：", 
+                                          selected = "3",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c("1）IgG<50 g/L 2）IgA<30 g/L 3）本周蛋白<4 g/24h","1）IgG>70 g/L 2）IgA>50 g/L 3）本周蛋白>12 g/24h","以上均不符合"),
+                                          choiceValues = c(1,2,3)
+                                        ),
+                                        
+                                        prettyRadioButtons(
+                                          inputId = "serum_jg",
+                                          label = "血清肌酐水平：", 
+                                          selected = "A",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c(" <177 μmol/L（2.0 mg/dl）","≥177 μmol/L（2.0 mg/dl）"),
+                                          choiceValues = c("A","B")
+                                        ),
+                                        prettyRadioButtons(
+                                          inputId = "B2_MG",
+                                          label = "β2 微球蛋白：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c(" <3.5 mg/L ","[3.5-5.5) mg/L","≥5.5 mg/L"),
+                                          choiceValues = c("1","2","3")
+                                        ),
+                                        prettyRadioButtons(
+                                          inputId = "W_MG",
+                                          label = "白蛋白：", 
+                                          selected = "1",
+                                          inline = TRUE, 
+                                          status = "danger",
+                                          fill = TRUE,
+                                          choiceNames = c(" ≥35 g/L"," < 35 g/L"),
+                                          choiceValues = c("1","2")
+                                        )
+                                 ),
+                                 textOutput("grade4")
+                               )
+                      ),
+                    )
+                  )
+                )
 )
 
 
@@ -365,6 +449,9 @@ server <- function(input, output) {
   output$Survey3 = renderText({
     switch_fun(input$Id078, "CAR-T！","CAR-T！") 
   })
+  output$Survey4 = renderText({
+    switch_fun(input$Id078, "MM！","MM！") 
+  })
   
   bmi <- reactive({
     w <- as.numeric(input$weight)
@@ -379,10 +466,10 @@ server <- function(input, output) {
     if (input$gender == "Common" | input$gender == "通用" ){
       (h * w / 3600)^0.5
     } else if (input$gender == "Female" | input$gender == "女性" ){
-    #0.00586×身高（cm）+0.0126×体重（kg）-0.0461
+      #0.00586×身高（cm）+0.0126×体重（kg）-0.0461
       0.00586 * h + 0.0126 * w - 0.0461
     } else{
-    #0.00607×身高（cm）+0.0127×体重（kg）- 0.0698
+      #0.00607×身高（cm）+0.0127×体重（kg）- 0.0698
       0.00607 * h + 0.0127 * w - 0.0698
     }
   })
@@ -401,9 +488,9 @@ server <- function(input, output) {
     
     read_excel(drug_path,
                col_types = c("text", "text", "numeric", 
-                              "numeric", "numeric", "numeric", "text")) %>% 
+                             "numeric", "numeric", "numeric", "text")) %>% 
       get_druglist_title(1,mod()) 
-   
+    
   })
   
   calculate_regimen <- reactive({
@@ -466,8 +553,8 @@ server <- function(input, output) {
   
   output$table2 <- renderTable({
     if (mod() == 1){
-    as.data.frame(calculate_regimen()) %>% 
-      select(-"类型")
+      as.data.frame(calculate_regimen()) %>% 
+        select(-"类型")
     }else{
       df <- as.data.frame(calculate_regimen()) %>% 
         select(-"类型")
@@ -511,8 +598,8 @@ server <- function(input, output) {
       print(" In addition, the citated drug does and regimens are mainly taken from an chinese regimens handbook for clinical hematology，Uptodate，USMLE Step 1&2 and BRS Pharmacology.")
     }
   })
-
-
+  
+  
   
   output$plt <- renderPlot({
     img <- jpeg::readJPEG(paste0(getwd(),"/image/logo.jpg"))
@@ -536,7 +623,7 @@ server <- function(input, output) {
       grades = 2
     }
     grades
-  
+    
   })
   
   output$grade <- renderText({
@@ -560,7 +647,7 @@ server <- function(input, output) {
     IPI_grades <- age + out_of_node + p_ECGO + p_ann + as.numeric(input$ldh)
   })
   
-  output$grade2 <- renderTable({
+  output$grade2 <- renderText({
     
     if (IPI_grades() < 2){
       print(paste("IPI评分：",IPI_grades(),"分，为低危"))
@@ -591,6 +678,36 @@ server <- function(input, output) {
       cart[4,]
     }
     
+  })
+  
+  tr <- function(x){
+    as.numeric(x)
+  }
+  
+  ds <- reactive({
+    DS <- c("DS I期","DS II期","DS III期")
+    if (tr(input$HGB) == 1 & tr(input$Serum_Ca) == 1 & tr(input$bone_image) == 1 & tr(input$M_protein) == 1){
+      ds <- DS[1]
+    } else if (tr(input$HGB) == 3 | tr(input$Serum_Ca) == 2 | tr(input$bone_image) == 2 | tr(input$M_protein) == 2) {
+      ds <- DS[3]
+    }else {
+      ds <- DS[2]
+    }
+  })
+  
+  iss <- reactive({
+    ISS <- c("ISS I期","ISS II期","ISS III期")
+    if (tr(input$B2_MG) == 1 & tr(input$W_MG) == 1){
+      iss <- ISS[1]
+    } else if (tr(input$B2_MG) == 3 ){
+      iss <- ISS[3]
+    }else {
+      iss <- ISS[2]
+    }
+  })
+  output$grade4 <- renderText({
+   
+    print(paste("该病人是：",ds(),paste0(input$serum_jg,"亚型"),iss()))
   })
 }
 
