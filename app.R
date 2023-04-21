@@ -9,6 +9,7 @@ library(shinythemes)
 library(readxl)
 library(fs)
 library(dplyr)
+library(tidyr)
 library(stringr)
 
 # Define UI for application that draws a histogram
@@ -70,10 +71,14 @@ gender_db <- data.frame(Chinese = c("通用", "女性", "男性"),
                         English = c("Common", "Female", "Male"))
 
 # Define a function to switch all text on the interface between Chinese and English
-switch_language <- function(lang,input_weight,input_height,input_regimens,input_genders) {
+switch_language <- function(lang,input_scr,input_age,input_weight,input_height,input_regimens,input_genders) {
   
   if (lang == "Chinese") {
     
+    updateTextInput(session = getDefaultReactiveDomain(), "scr",
+                    "肌酐", input_scr)
+    updateTextInput(session = getDefaultReactiveDomain(), "age",
+                    "年龄", input_age)
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
     updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
     updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = input_regimens, choices = disease_list)
@@ -82,6 +87,10 @@ switch_language <- function(lang,input_weight,input_height,input_regimens,input_
                              choiceNames = gender_db$Chinese, choiceValues = gender_db$Chinese)
     updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   } else {
+    updateTextInput(session = getDefaultReactiveDomain(), "scr",
+                    "Serum creatinine(umol/L)", input_scr)
+    updateTextInput(session = getDefaultReactiveDomain(), "age",
+                    "Age",input_age)
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
     updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
     updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
@@ -110,6 +119,23 @@ ui <- fluidPage(theme = shinytheme("journal"),
                 # Sidebar with a slider input for number of bins 
                 sidebarLayout(
                   sidebarPanel(
+                    dropdown(
+                      
+                      tags$h3(uiOutput("advance")),
+                      
+                      textInput("age",
+                                "年龄"),
+                      textInput("scr",
+                                "肌酐"),
+                      
+                      style = "unite", icon = icon("gear"),
+                      status = "danger", width = "300px",
+                      animate = animateOptions(
+                        enter = animations$fading_entrances$fadeInLeftBig,
+                        exit = animations$fading_exits$fadeOutRightBig
+                      )
+                    ),
+                    
                     textInput("weight",
                               "体重(KG)",
                               "50"),
@@ -423,14 +449,18 @@ server <- function(input, output) {
   # Switch language when button is clicked
   observeEvent(input$Id078, {
     if (input$Id078 == TRUE) {
-      switch_language("English",input$weight,input$height,input$regimens, input$gender)
+      switch_language("English",input$scr,input$age,input$weight,input$height,input$regimens, input$gender)
     } else {
-      switch_language("Chinese",input$weight,input$height,input$regimens,input$gender)
+      switch_language("Chinese",input$scr,input$age,input$weight,input$height,input$regimens,input$gender)
     }
   })
   output$titlepan = renderText({
     switch_fun(input$Id078, "Hematological Drug Assistant","血液科用药助手") 
   })
+  output$advance = renderText({
+    switch_fun(input$Id078, "Advanced Settings","更多") 
+  })
+  "Advanced Settings"
   output$Recommendation = renderText({
     switch_fun(input$Id078, "Recommendation","方案推荐") 
   })
@@ -473,6 +503,19 @@ server <- function(input, output) {
       0.00607 * h + 0.0127 * w - 0.0698
     }
   })
+  
+  ccr <- reactive({
+    if (is.null(input$age)| is.null(input$scr)){
+      ccr <- NULL
+    } else if (input$gender == "Common" | input$gender == "通用"){
+      ccr <- (140- as.numeric(input$age)) * as.numeric(input$weight)/ 0.818 / as.numeric(input$scr)
+    } else if (input$gender == "Female" | input$gender == "女性"){
+      ccr <- 0.85 * 1.23 * (140- as.numeric(input$age)) * as.numeric(input$weight)/ as.numeric(input$scr)
+    }else {
+      ccr <- 1.23 * (140- as.numeric(input$age)) * as.numeric(input$weight)/ as.numeric(input$scr)
+    }
+  })
+  
   mod <-reactive({
     switch_fun(input$Id078,2,1)
   })
@@ -541,12 +584,14 @@ server <- function(input, output) {
       data.frame(体重 = input$weight,
                  身高 = input$height,
                  身体质量指数 = bmi(),
-                 人体表面面积 = bsa())
+                 人体表面面积 = bsa(),
+                 肌酐清除率 = ccr()) 
     } else{
       data.frame(Weight = input$weight,
                  Height = input$height,
                  BodyMassIndex = bmi(),
-                 BodySurfaceArea = bsa())
+                 BodySurfaceArea = bsa(),
+                 EstimatedCCr = ccr()) 
     }
     
   })
