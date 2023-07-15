@@ -17,9 +17,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: |
-        install.packages("shiny")
-        install.packages("rsconnect")
+      run: install.packages("rsconnect")
 
     - name: Deploy to RStudio Connect
       run: |
