@@ -27,5 +27,5 @@ jobs:
         rsconnect::setAccountInfo(name="${{ secrets.RSCONNECT_ACCOUNT }}", 
                                   token="${{ secrets.RSCONNECT_TOKEN }}", 
                                   secret="${{ secrets.RSCONNECT_SECRET }}")
-        rsconnect::deployApp(appDir = ".")
+        rsconnect::deployApp(appDir = getwd())
       shell: Rscript {0}
