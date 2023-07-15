@@ -3,7 +3,7 @@ name: Deploy to RStudio Connect
 on:
   push:
     branches:
-      - next_version
+      - master
 
 jobs:
   deploy:
