@@ -77,7 +77,7 @@ switch_language <- function(lang,input_scr,input_age,input_weight,input_height,i
     
     updateTextInput(session = getDefaultReactiveDomain(), "scr",
                     "肌酐", input_scr)
-    updateTextInput(session = getDefaultReactiveDomain(), "age",
+    updateTextInput(session = getDefaultReactiveDomain(), "aged",
                     "年龄", input_age)
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
     updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
@@ -89,7 +89,7 @@ switch_language <- function(lang,input_scr,input_age,input_weight,input_height,i
   } else {
     updateTextInput(session = getDefaultReactiveDomain(), "scr",
                     "Serum creatinine(umol/L)", input_scr)
-    updateTextInput(session = getDefaultReactiveDomain(), "age",
+    updateTextInput(session = getDefaultReactiveDomain(), "aged",
                     "Age",input_age)
     updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
     updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
@@ -123,12 +123,12 @@ ui <- fluidPage(theme = shinytheme("journal"),
                       
                       tags$h3(uiOutput("advance")),
                       
-                      textInput("age",
+                      textInput("aged",
                                 "年龄"),
                       textInput("scr",
                                 "肌酐"),
                       
-                      style = "unite", icon = icon("gear"),
+                      style = "material-circle", icon = icon("sliders"),
                       status = "danger", width = "300px",
                       animate = animateOptions(
                         enter = animations$fading_entrances$fadeInLeftBig,
@@ -449,9 +449,9 @@ server <- function(input, output) {
   # Switch language when button is clicked
   observeEvent(input$Id078, {
     if (input$Id078 == TRUE) {
-      switch_language("English",input$scr,input$age,input$weight,input$height,input$regimens, input$gender)
+      switch_language("English",input$scr,input$aged,input$weight,input$height,input$regimens, input$gender)
     } else {
-      switch_language("Chinese",input$scr,input$age,input$weight,input$height,input$regimens,input$gender)
+      switch_language("Chinese",input$scr,input$aged,input$weight,input$height,input$regimens,input$gender)
     }
   })
   output$titlepan = renderText({
@@ -462,7 +462,10 @@ server <- function(input, output) {
   })
   "Advanced Settings"
   output$Recommendation = renderText({
+    withProgress(message = 'loading ...',
+                 detail = 'This may take a while...', value = 1, {
     switch_fun(input$Id078, "Recommendation","方案推荐") 
+                 })
   })
   output$SideEffects = renderText({
     switch_fun(input$Id078, "SideEffects", "药物副作用") 
@@ -508,11 +511,11 @@ server <- function(input, output) {
     if (is.null(input$age)| is.null(input$scr)){
       ccr <- NULL
     } else if (input$gender == "Common" | input$gender == "通用"){
-      ccr <- (140- as.numeric(input$age)) * as.numeric(input$weight)/ 0.818 / as.numeric(input$scr)
+      ccr <- (140- as.numeric(input$aged)) * as.numeric(input$weight)/ 0.818 / as.numeric(input$scr)
     } else if (input$gender == "Female" | input$gender == "女性"){
-      ccr <- 0.85 * 1.23 * (140- as.numeric(input$age)) * as.numeric(input$weight)/ as.numeric(input$scr)
+      ccr <- 0.85 * 1.23 * (140- as.numeric(input$aged)) * as.numeric(input$weight)/ as.numeric(input$scr)
     }else {
-      ccr <- 1.23 * (140- as.numeric(input$age)) * as.numeric(input$weight)/ as.numeric(input$scr)
+      ccr <- 1.23 * (140- as.numeric(input$aged)) * as.numeric(input$weight)/ as.numeric(input$scr)
     }
   })
   
@@ -597,6 +600,8 @@ server <- function(input, output) {
   })
   
   output$table2 <- renderTable({
+    withProgress(message = 'Calculating ...',
+                 detail = 'This may take a while...', value = 1, {
     if (mod() == 1){
       as.data.frame(calculate_regimen()) %>% 
         select(-"类型")
@@ -607,6 +612,7 @@ server <- function(input, output) {
                         "Max Dose","Unit")
       df <- df
     }
+                 })
   })
   output$warn <- renderText({
     if (mod() == 1){
@@ -621,11 +627,14 @@ server <- function(input, output) {
   })
   
   output$about <- renderText({
+    withProgress(message = 'Reading informations ...',
+                 detail = 'This may take a while...', value = 1, {
     if (mod() == 1){
       print(paste("本应用程序由CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
     } else {
       print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
     }
+                 })
   })
   
   output$formula <- renderText({
