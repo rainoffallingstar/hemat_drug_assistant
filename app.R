@@ -630,9 +630,9 @@ server <- function(input, output) {
     withProgress(message = 'Reading informations ...',
                  detail = 'This may take a while...', value = 1, {
     if (mod() == 1){
-      print(paste("本应用程序由CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
+      print(paste("本应用程序由来自GmadeStudio HBSig和CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
     } else {
-      print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
+      print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from GmadeStudio HBSig and the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
     }
                  })
   })
