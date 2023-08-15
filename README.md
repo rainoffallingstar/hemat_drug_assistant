@@ -1,5 +1,7 @@
 # hemat_drug_assistant
 
+[![DOI](https://zenodo.org/badge/666609619.svg)](https://zenodo.org/badge/latestdoi/666609619)
+
 #### 介绍
 
 A shiny application developed for drug does calculation in clinical works.
