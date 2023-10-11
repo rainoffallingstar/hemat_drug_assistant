@@ -141,7 +141,7 @@ ui <- page_fluid(
                         exit = animations$fading_exits$fadeOutRightBig
                       )
                     ),
-                    br()
+                    br(),
                     textInput("weight",
                               "体重(KG)",
                               "50"),
