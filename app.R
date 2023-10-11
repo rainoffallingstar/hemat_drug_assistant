@@ -141,7 +141,7 @@ ui <- page_fluid(
                         exit = animations$fading_exits$fadeOutRightBig
                       )
                     ),
-                    
+                    br()
                     textInput("weight",
                               "体重(KG)",
                               "50"),
@@ -374,7 +374,7 @@ ui <- page_fluid(
                                  ),
                                  card_footer(
                                    actionButton("submit3", "Submit"),
-                                   textOutput("grade3"))
+                                   tableOutput("grade3"))
                                )
                       ),
                       tabPanel(title = uiOutput("Survey4"),
