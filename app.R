@@ -461,6 +461,42 @@ ui <- page_fluid(
                                  card_footer(
                                    textOutput("grade4"))
                                )
+                      ),
+                      tabPanel(title = uiOutput("Survey5"),
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("PHSC counts-before"),
+                                 card_body(br(),
+                                           textInput("PB_WBC",
+                                                     "外周血白细胞(10^9/L)",
+                                                     "10"),
+                                           textInput("PB_CD34",
+                                                     "外周血CD34%(%)",
+                                                     "5")
+                                 ),
+                                 card_footer(
+                                   actionButton("submit_PHSC", "Submit"),
+                                   textOutput("PHSC_before"))
+                               ),
+                               
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("PHSC counts-after"),
+                                 card_body(br(),
+                                           textInput("collection_WBC",
+                                                     "采集物白细胞(10^9/L)",
+                                                     "10"),
+                                           textInput("collection_CD34",
+                                                     "采集物CD34%(%)",
+                                                     "5"),
+                                           textInput("collection_volumn",
+                                                     "采集物体积(ml)",
+                                                     "200")
+                                 ),
+                                 card_footer(
+                                   actionButton("submit_collection", "Submit"),
+                                   textOutput("PHSC_after"))
+                               )
                       )
                     )
                   )
@@ -510,6 +546,10 @@ server <- function(input, output) {
   })
   output$Survey4 = renderText({
     switch_fun(input$Id078, "MM！","MM！") 
+  })
+  
+  output$Survey5 = renderText({
+    switch_fun(input$Id078, "PHSC-Count","外周采干计数") 
   })
   
   bmi <- reactive({
@@ -789,6 +829,31 @@ server <- function(input, output) {
    
     print(paste("该病人是：",ds(),paste0(input$serum_jg,"亚型"),iss()))
   })
+  
+  phsc_count_before <- eventReactive(input$submit_PHSC, {
+    PB_WBC <- as.numeric(input$PB_WBC)
+    PB_CD34 <- as.numeric(input$PB_CD34)
+    phsc_count_before <- 10 *  PB_WBC * PB_CD34
+    return(phsc_count_before)
+  })
+  
+  output$PHSC_before <- renderText({
+    print(paste("计算公式为：10*PB_WBC(10^9)*PB_CD34(%),采集前外周血干细胞计数为：",phsc_count_before()))
+  })
+  
+  phsc_count_after <- eventReactive(input$submit_collection, {
+    collection_WBC <- as.numeric(input$collection_WBC)
+    collection_CD34 <- as.numeric(input$collection_CD34)
+    collection_volumn <- as.numeric(input$collection_volumn)
+    phsc_count_after <- collection_WBC / 10 * collection_CD34 * collection_volumn / as.numeric(input$weight)
+    return(phsc_count_after)
+  })
+  
+  output$PHSC_after <- renderText({
+    print(paste("计算公式为：collection_WBC(10^9)/10*collection_CD34(%)*collection_volumn(ml)/weight(kg),采集物干细胞计数为：",phsc_count_after(),"(10^6/kg)"))
+  })
+  
+  
 }
 
 # Run the application 
