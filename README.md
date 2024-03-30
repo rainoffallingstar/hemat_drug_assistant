@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/666609619.svg)](https://zenodo.org/badge/latestdoi/666609619)
 
+<img src="https://github.com/rainoffallingstar/hemat_drug_assistant/blob/master/image/logo.jpg" height="200" align="right"/>
+
 #### 介绍
 
 A shiny application developed for drug does calculation in clinical works.
