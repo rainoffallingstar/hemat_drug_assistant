@@ -497,11 +497,148 @@ ui <- page_fluid(
                                    actionButton("submit_collection", "Submit"),
                                    textOutput("PHSC_after"))
                                )
+                      ),
+                      tabPanel(title = uiOutput("Surveymore"),
+                               # 4Ts
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("HIT 4Ts"),
+                                 card_body(br(),
+                                           prettyRadioButtons(
+                                             inputId = "PLT_change",
+                                             label = "血小板减少：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" 下降<30%(绝对值下降<10×10^9/L) ",
+                                                             "下降30-50%(绝对值下降10-19×10^9/L)",
+                                                             "下降>50%(绝对值下降≥20×10^9/L)"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "PLT_time",
+                                             label = "血小板减少时间(Timing)：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("使用肝素≤1天,但既往无肝素接触史 ",
+                                                             "使用肝素>10天或时间不能确定,或≤1天(过去30-100天内曾经使用肝素)",
+                                                             "使用肝素5-10天或≤1天(过去30天内曾经使用肝素)"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "PLT_agg",
+                                             label = "血栓形成(Thrombosis)：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" 无 ",
+                                                             "血栓再发或加重,非坏死性皮肤损伤、可疑血栓",
+                                                             "新发血栓、皮肤坏疽、静注后急性全身反应"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "PLT_reason",
+                                             label = "其他致血小板减少原因：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("证据明确",
+                                                             "疑诊",
+                                                             "无证据"),
+                                             choiceValues = c("0","1","2")
+                                           )
+                                 ),
+                                 card_footer(
+                                   actionButton("submit_HIT", "Submit"),
+                                   textOutput("HIT_score"))
+                               ),
+                               # DIC诊断积分
+                               
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("DIC诊断积分"),
+                                 card_body(br(),
+                                           prettyRadioButtons(
+                                             inputId = "PLT",
+                                             label = "PLT(*10^9/L)：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" >100 ","<100","<50"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "FDPs",
+                                             label = "FDP :", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" 无增加（<5mg/L） ","中度增加（5-<9mg/L）","显著增加（>=9mg/L）"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "PT",
+                                             label = "PT延长(s):", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" <3） ","3-6",">6"),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "FBG",
+                                             label = "FBG纤维蛋白(g/L)：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" >1 ","<1"),
+                                             choiceValues = c("0","1")
+                                           )
+                                 ),
+                                 card_footer(
+                                   actionButton("submit_DIC", "Submit"),
+                                   textOutput("DIC_score"))
+                               ),
+                               # 低钠血症补钠计算
+                               # 化疗后骨髓抑制分度
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("化疗致血小板减少分度"),
+                                 card_body(br(),
+                                           prettyRadioButtons(
+                                             inputId = "PLT_total",
+                                             label = "PLT(*10^9/L)：", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(" [75-100) ","[50-75)",
+                                                             "[25-50)","< 25"),
+                                             choiceValues = c("1","2","3","4")
+                                           )
+                                 ),
+                                 card_footer(
+                                   textOutput("CIT_score"))
+                               ),
+                               # 朗格汉斯细胞组织细胞增生症LCH临床分型（Lavin-Osband分级法）
+                               # FLIPI
+                               # MDS-IPSS-R
+                               # WPSS
                       )
                     )
                   )
                 )
 )
+
 
 
 # Define server logic required to draw a histogram
@@ -550,6 +687,9 @@ server <- function(input, output) {
   
   output$Survey5 = renderText({
     switch_fun(input$Id078, "PHSC-Count","外周采干计数") 
+  })
+  output$Surveymore = renderText({
+    switch_fun(input$Id078, "More","更多") 
   })
   
   bmi <- reactive({
@@ -851,6 +991,45 @@ server <- function(input, output) {
   
   output$PHSC_after <- renderText({
     print(paste("计算公式为：collection_WBC(10^9)/10*collection_CD34(%)*collection_volumn(ml)/weight(kg),采集物干细胞计数为：",phsc_count_after(),"(10^6/kg)"))
+  })
+  
+  cal_DICscore <- eventReactive(input$submit_DIC, {
+    score <- as.numeric(input$PLT) + 
+      as.numeric(input$FDPs) + 
+      as.numeric(input$PT) +
+      as.numeric(input$FBG)
+    return(score)
+  })
+  
+  output$DIC_score <- renderText({
+    if (cal_DICscore() >= 5){
+      print(paste("积分>=5分，符合典型DIC"))
+    } else {
+      print(paste("积分<5分，提示非典型DIC"))
+    }
+    
+  })
+  
+  cal_HITscore <- eventReactive(input$submit_HIT, {
+    score <- as.numeric(input$PLT_change) + 
+      as.numeric(input$PLT_time) + 
+      as.numeric(input$PLT_agg) +
+      as.numeric(input$PLT_reason)
+    return(score)
+  })
+  
+  output$HIT_score <- renderText({
+    if (cal_HITscore() <= 3){
+      print(paste("0-3分,轻度怀疑:诊断HIT概率很低"))
+    } else if (cal_HITscore() >= 6) {
+      print(paste("6-8分,高度怀疑:抗体阴性者诊断HIT概率为16%,抗体阳性者诊断HIT概率为98%。"))
+    } else {
+      print(paste("4-5分,中度怀疑:抗体阴性者诊断HIT概率为0.6%,抗体阳性者诊断HIT概率为58.2%"))
+    }
+    
+  })
+  output$CIT_score <- renderText({
+    print(paste("CIT grade is",input$PLT_total))
   })
   
   
