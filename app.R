@@ -608,7 +608,7 @@ ui <- page_fluid(
                                    actionButton("submit_DIC", "Submit"),
                                    textOutput("DIC_score"))
                                ),
-                               # 低钠血症补钠计算
+                               
                                # 化疗后骨髓抑制分度
                                card(
                                  full_screen = TRUE,
@@ -629,6 +629,7 @@ ui <- page_fluid(
                                  card_footer(
                                    textOutput("CIT_score"))
                                ),
+                               
                                # 朗格汉斯细胞组织细胞增生症LCH临床分型（Lavin-Osband分级法）
                                # FLIPI
                                # MDS-IPSS-R
