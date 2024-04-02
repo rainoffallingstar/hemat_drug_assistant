@@ -874,16 +874,16 @@ server <- function(input, output) {
     switch_fun(input$Id078, "About me","关于我") 
   })
   output$Survey = renderText({
-    switch_fun(input$Id078, "Bonus！","彩蛋！") 
+    switch_fun(input$Id078, "aGVHD","aGVHD") 
   })
   output$Survey2 = renderText({
-    switch_fun(input$Id078, "Bigbang！","大爆炸！") 
+    switch_fun(input$Id078, "IPI","IPI") 
   })
   output$Survey3 = renderText({
-    switch_fun(input$Id078, "CAR-T！","CAR-T！") 
+    switch_fun(input$Id078, "CAR-T","CAR-T") 
   })
   output$Survey4 = renderText({
-    switch_fun(input$Id078, "MM！","MM！") 
+    switch_fun(input$Id078, "MM","MM") 
   })
   
   output$Survey5 = renderText({
