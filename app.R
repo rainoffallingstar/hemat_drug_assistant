@@ -809,6 +809,30 @@ ui <- page_fluid(
                                    textOutput("EBMT_table"),
                                    plotOutput("EBMT_plt"))
                                ),
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("血清钙离子矫正（通用剂量单位）"),
+                                 card_body(br(),
+                                           textInput("Serum_Calcium",
+                                                     "Serum Calcium(mg/dL)",
+                                                     "10"),
+                                           prettyRadioButtons(
+                                             inputId = "normal_albumin",
+                                             label = "Normal albumin(g/dL)", 
+                                             selected = "4",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("4g/dL ","4.4g/dL "),
+                                             choiceValues = c("4","4.4")
+                                           ),
+                                           textInput("Patient_albumin",
+                                                     "Patient albumin (g/dL)",
+                                                     "3.9")
+                                 ),
+                                 card_footer(
+                                   textOutput("adjust_calcium"))
+                               )
                                
                       )
                     )
@@ -1265,6 +1289,16 @@ server <- function(input, output) {
   output$EBMT_plt <- renderPlot({
     img <- jpeg::readJPEG(paste0(getwd(),"/image/EBMT.jpg"))
     plot(as.raster(img))
+  })
+  
+  output$adjust_calcium <- renderText({
+    if (as.numeric(input$Patient_albumin) > as.numeric(input$normal_albumin)){
+      paste0("the serum albumin should be lower than normal albumin")
+    } else {
+      adjust_cal <- as.numeric(input$Serum_Calcium) + 
+        0.8 * (as.numeric(input$normal_albumin) - as.numeric(input$Patient_albumin))
+      paste0("the adjust serum albumin is"," ",adjust_cal,"mg/dL")
+    }
   })
   
 }
