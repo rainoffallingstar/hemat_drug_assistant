@@ -1230,7 +1230,7 @@ server <- function(input, output) {
     
   })
   output$CIT_score <- renderText({
-    print(paste("CIT grade is",input$PLT_total))
+    paste("CIT grade is",input$PLT_total)
   })
   output$tpz_table <- renderTable({
     
