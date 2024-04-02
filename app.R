@@ -746,6 +746,70 @@ ui <- page_fluid(
                                  card_footer(
                                    tableOutput("mdapss_table"))
                                ),
+                               
+                               #EBMT risk score
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("the EBMT risk score"),
+                                 card_body(br(),
+                                           
+                                           prettyRadioButtons(
+                                             inputId = "age_EBMT",
+                                             label = "Age of the patient, years", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("<20","20-40",">40"),
+                                             choiceValues = c("0","1","2" )
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "stage_EBMT",
+                                             label = "Disease stage", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("Early/aplastic anemia ","Intermediate","Late "),
+                                             choiceValues = c("0","1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "time_EBMT",
+                                             label = "Time interval from diagnosis to transplant, months ", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("<12 or transplanted in first CR ",">12"),
+                                             choiceValues = c("0","1")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "donor_EBMT",
+                                             label = "Donor type ", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("HLA-identical sibling donor ","Unrelated donor, other "),
+                                             choiceValues = c("0","1")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "sex_EBMT",
+                                             label = "Donor recipient sex combination c", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("All other ","Female donor, male recipient "),
+                                             choiceValues = c("0","1")
+                                           )
+                                           
+                                 ),
+                                 card_footer(
+                                   textOutput("EBMT_table"),
+                                   plotOutput("EBMT_plt"))
+                               ),
+                               
                       )
                     )
                   )
@@ -1188,6 +1252,19 @@ server <- function(input, output) {
     
     mdapss_refertable[1,]
     
+  })
+  
+  output$EBMT_table <- renderText({
+    
+    index_sum <- c(input$age_EBMT,input$stage_EBMT,input$time_EBMT,
+                   input$donor_EBMT,input$sex_EBMT) %>% 
+      as.numeric() %>% sum()
+    paste0( "the EBMT risk score is",index_sum)
+  })
+  
+  output$EBMT_plt <- renderPlot({
+    img <- jpeg::readJPEG(paste0(getwd(),"/image/EBMT.jpg"))
+    plot(as.raster(img))
   })
   
 }
