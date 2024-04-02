@@ -629,11 +629,123 @@ ui <- page_fluid(
                                  card_footer(
                                    textOutput("CIT_score"))
                                ),
-                               
-                               # 朗格汉斯细胞组织细胞增生症LCH临床分型（Lavin-Osband分级法）
-                               # FLIPI
-                               # MDS-IPSS-R
-                               # WPSS
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("糖皮质激素剂量换算"),
+                                 card_body(br(),
+                                           prettyRadioButtons(
+                                             inputId = "tpz_name",
+                                             label = "药物名称：", 
+                                             selected = "地塞米松",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("可的松","氢化可的松","强的松","强的松龙",
+                                                             "甲强龙","曲安西龙","倍他米松",
+                                                             "地塞米松",
+                                                             "氯地米松" ),
+                                             choiceValues = c("可的松","氢化可的松","强的松","强的松龙",
+                                                              "甲强龙","曲安西龙","倍他米松",
+                                                              "地塞米松",
+                                                              "氯地米松" )
+                                           ),
+                                           textInput("tpz_dose",
+                                                     "剂量（mg）：",
+                                                     "2")
+                                           
+                                 ),
+                                 card_footer(
+                                   tableOutput("tpz_table"))
+                               ),
+                               card(
+                                 full_screen = TRUE,
+                                 card_header("骨髓增生异常综合征M.D.安德森预后评分系统(MDAPSS)"),
+                                 card_body(br(),
+                                           prettyRadioButtons(
+                                             inputId = "ECOG_mds",
+                                             label = "1.体能状态(ECOG)≥2分", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("是","否"),
+                                             choiceValues = c("2","0" )
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "age_mds",
+                                             label = "2.年龄(岁)", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("60~64","≥65","<60"),
+                                             choiceValues = c("1","2","0" )
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "blast_mds",
+                                             label = "3.骨髓原始细胞比例(%)", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("5~10","11~29"),
+                                             choiceValues = c("1","2")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "plt_mds",
+                                             label = "4.血小板(x109/L)", 
+                                             selected = "1",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("50~199","30~49","<30"),
+                                             choiceValues = c("1","2","3")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "hb_mds",
+                                             label = "5.血红蛋白(g/dL)", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("< 12 g/L","≥ 12 g/L"),
+                                             choiceValues = c("2","0")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "wbc_mds",
+                                             label = "6.白细胞(x109/L)", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c(">20","≤20"),
+                                             choiceValues = c("2","0")
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "kay_mds",
+                                             label = "7.染色体核型(7号染色体异常或>2个异常)", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("是","否"),
+                                             choiceValues = c("3","0" )
+                                           ),
+                                           prettyRadioButtons(
+                                             inputId = "transfunsion_mds",
+                                             label = "8.既往输血", 
+                                             selected = "0",
+                                             inline = TRUE, 
+                                             status = "danger",
+                                             fill = TRUE,
+                                             choiceNames = c("是","否"),
+                                             choiceValues = c("1","0" )
+                                           )
+                                           
+                                 ),
+                                 card_footer(
+                                   tableOutput("mdapss_table"))
+                               ),
                       )
                     )
                   )
@@ -1032,7 +1144,51 @@ server <- function(input, output) {
   output$CIT_score <- renderText({
     print(paste("CIT grade is",input$PLT_total))
   })
-  
+  output$tpz_table <- renderTable({
+    
+    tpz_refertable <- data.frame(
+      tpznames = c("可的松","氢化可的松","强的松","强的松龙",
+                   "甲强龙","曲安西龙","倍他米松",
+                   "地塞米松",
+                   "氯地米松" ),
+      basedose = c(25,20,5,5,4,4,0.8,0.75,0.5)
+    ) 
+    rownames(tpz_refertable) <- tpz_refertable$tpznames
+    input_dose_times <- as.numeric(input$tpz_dose) / tpz_refertable[input$tpz_name,][["basedose"]]
+    tpz_refertable %>% 
+      dplyr::mutate(dose = basedose * input_dose_times) %>% 
+      dplyr::select(-basedose,-tpznames) %>%  
+      t() %>% 
+      as.data.frame() %>% 
+      dplyr::mutate(单位 = "mg")
+    
+  })
+  output$mdapss_table <- renderTable({
+    
+    mdapss_refertable <- data.frame(
+      积分 = c("0-4","5-6","7-8",">=9"),
+      分组 = c("低危","中危1","中危2","高危"),
+      中位生存月 = c(54,25,14,6),
+      三年生存率 = c(63,34,16,4),
+      index = c(4,6,8,9)
+    ) 
+    index_sum <- c(input$transfunsion_mds,input$kay_mds,input$wbc_mds,
+                   input$hb_mds,input$plt_mds,input$blast_mds,
+                   input$age_mds,input$ECOG_mds) %>% 
+      as.numeric() %>% sum()
+    index_sum_fix <- index_sum
+    if (index_sum >= 9){
+      index_sum_fix = 9
+    }
+    mdapss_refertable <- mdapss_refertable %>% 
+      dplyr::filter(index >= index_sum_fix) %>% 
+      dplyr::arrange(index) %>% 
+      dplyr::mutate(score = index_sum) %>% 
+      dplyr::select(-index)
+    
+    mdapss_refertable[1,]
+    
+  })
   
 }
 
