@@ -3,31 +3,22 @@
 # Body mass index, kg/m2 = weight, kg / (height, m)2
 # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
 #install.packages("bslib")
-
+devtools::install_github("rainoffallingstar/mellon")
+library(mellon)
 library(shiny)
 library(shinyWidgets)
-library(readxl)
-library(fs)
 library(dplyr)
-library(tidyr)
 library(stringr)
 library(bslib)
 library(thematic)
 
 # Define UI for application that draws a histogram
-disease_list <- list()
-disease_names<- list.dirs(paste0(getwd(), "/data/"),
-                          full.names = FALSE, recursive = FALSE)
-
-for (i in 1:length(disease_names)){
-  filelist <- list.files(paste0(getwd(), "/data/",disease_names[i],"/"), 
-                         pattern = ".xlsx", recursive = FALSE)
-  for (a in 1:length(filelist) ){
-    filelist[a] <- substring(filelist[a],1,nchar(filelist[a])-5)
-  }
-  disease_list[[i]] <- filelist
-}
-names(disease_list) <-disease_names
+data("disease_list")
+data("database")
+data("agvhd")
+data("cart")
+data("regmen_list")
+data("gender_db")
 
 # define  functions to process the strings in the excel files
 # make all drug names display in the same way
@@ -35,27 +26,21 @@ update_druglist_title <- function(x,y) {
   raw_data <- x
   for (i in 1:nrow(raw_data)){
     raw_data[i,y] <- raw_data[i,y] %>% 
-      str_to_lower() %>% 
-      str_to_sentence()
+      stringr::str_to_lower() %>% 
+      stringr::str_to_sentence()
   }
   return(raw_data)
 }
-database <- read_excel("data/standerd_drug_names.xlsx") %>% 
-  update_druglist_title(1) %>% 
-  update_druglist_title(2)
-agvhd <- read_excel("data/agvhd.xlsx")
-cart <- read_excel("data/cart.xls")
-
 
 get_druglist_title <- function(x,y,z) {
   raw_data <- x
   for (i in 1:nrow(raw_data)){
-    if (str_detect(raw_data[i,y],"[\\p{Han}]")){
+    if (stringr::str_detect(raw_data[i,y],"[\\p{Han}]")){
       id <- grep(raw_data[i,y],database$药名)
     }else{
       pro <- raw_data[i,y] %>% 
-        str_to_lower() %>% 
-        str_to_sentence()
+        stringr::str_to_lower() %>% 
+        stringr::str_to_sentence()
       id <- grep(pro,database$Drugs)
     }
     
@@ -69,9 +54,6 @@ get_druglist_title <- function(x,y,z) {
   return(raw_data)
 }
 
-gender_db <- data.frame(Chinese = c("通用", "女性", "男性"),
-                        English = c("Common", "Female", "Male"))
-
 card_names <- c("基本信息","治疗方案")
 
 # Define a function to switch all text on the interface between Chinese and English
@@ -79,30 +61,30 @@ switch_language <- function(lang,input_scr,input_age,input_weight,input_height,i
   
   if (lang == "Chinese") {
     card_names <- c("基本信息","治疗方案")
-    updateTextInput(session = getDefaultReactiveDomain(), "scr",
-                    "肌酐", input_scr)
-    updateTextInput(session = getDefaultReactiveDomain(), "aged",
-                    "年龄", input_age)
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = input_regimens, choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", 
-                             selected = input_genders,
-                             choiceNames = gender_db$Chinese, choiceValues = gender_db$Chinese)
-    updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "scr",
+                           "肌酐", input_scr)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "aged",
+                           "年龄", input_age)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "weight", "体重(KG)", input_weight)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "height", "身高(CM)", input_height)
+    shinyWidgets::updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "选择方案", selected = input_regimens, choices = disease_list)
+    shinyWidgets::updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "选择性别:", 
+                                           selected = input_genders,
+                                           choiceNames = gender_db$Chinese, choiceValues = gender_db$Chinese)
+    shinyWidgets::updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   } else {
     card_names <- c("基本信息_en","治疗方案_en")
-    updateTextInput(session = getDefaultReactiveDomain(), "scr",
-                    "Serum creatinine(umol/L)", input_scr)
-    updateTextInput(session = getDefaultReactiveDomain(), "aged",
-                    "Age",input_age)
-    updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
-    updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
-    updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
-    updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:",
-                             selected = input_genders,
-                             choiceNames = gender_db$English, choiceValues = gender_db$Chinese)
-    updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "scr",
+                           "Serum creatinine(umol/L)", input_scr)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "aged",
+                           "Age",input_age)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "weight", "Weight(KG)", input_weight)
+    shiny::updateTextInput(session = getDefaultReactiveDomain(), "height", "Height(CM)", input_height)
+    shinyWidgets::updatePickerInput(session = getDefaultReactiveDomain(), "regimens", "Regimens Selected", selected = input_regimens, choices = disease_list)
+    shinyWidgets::updatePrettyRadioButtons(session = getDefaultReactiveDomain(), "gender", "Choose Gender:",
+                                           selected = input_genders,
+                                           choiceNames = gender_db$English, choiceValues = gender_db$Chinese)
+    shinyWidgets::updateSwitchInput(session = getDefaultReactiveDomain(), "Id078", onLabel = "En", offLabel = "中")
   }
 }
 
@@ -119,725 +101,725 @@ switch_fun <- function(x,y,z){
 ui <- page_fluid(
   
   theme = bslib::bs_theme(bootswatch = "journal"),
-                # Application title
-                titlePanel(title = uiOutput("titlepan")),
-                
-                # Sidebar with a slider input for number of bins 
-                sidebarLayout(
-                  sidebarPanel(
-                    tags$head(includeHTML(("baidu-analytics.html"))),
-                    dropdown(
-                      
-                      tags$h3(uiOutput("advance")),
-                      
-                      textInput("aged",
-                                "年龄"),
-                      textInput("scr",
-                                "肌酐"),
-                      
-                      style = "material-circle", icon = icon("sliders"),
-                      status = "danger", width = "300px",
-                      animate = animateOptions(
-                        enter = animations$fading_entrances$fadeInLeftBig,
-                        exit = animations$fading_exits$fadeOutRightBig
-                      )
-                    ),
-                    br(),
-                    textInput("weight",
-                              "体重(KG)",
-                              "50"),
-                    textInput("height",
-                              "身高(CM)",
-                              "170"),
-                    pickerInput("regimens",
-                                "选择方案",
-                                selected = "R-CHOP",
-                                choices = disease_list
-                    ),
-                    prettyRadioButtons(
-                      inputId = "gender",
-                      label = "选择性别:", 
-                      selected = "通用",
-                      inline = TRUE, 
-                      status = "danger",
-                      fill = TRUE,
-                      choiceNames = gender_db$Chinese,
-                      choiceValues = gender_db$Chinese
-                    ),
-                    switchInput(
-                      inputId = "Id078",
-                      onLabel = "En",
-                      offLabel = "中"
-                    )
-                  ),
-                  
-                  # Show a plot of the generated distribution
-                  mainPanel(
-                    tabsetPanel(
-                      tabPanel(title = uiOutput("Recommendation"), 
-                               card(
-                                 full_screen = TRUE,
-                                 card_header(card_names[1]),
-                                 card_body(tableOutput("table1"))
-                               ),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header(card_names[2]),
-                                 card_body(tableOutput("table2")
-                                           ),
-                                 card_footer(textOutput("warn")))
-                               ),
-                      tabPanel(title = uiOutput("SideEffects"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("药物副作用"),
-                                 card_body(tableOutput("table3"))
-                               )),
-                      tabPanel(title = uiOutput("Aboutme"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("关于作者"),
-                                 card_body(textOutput("about"),
-                                           textOutput("formula"),
-                                           textOutput("references"),
-                                           plotOutput("plt"))
-                               )
-                               
-                      ),
-                      tabPanel(title = uiOutput("Survey"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("aGVHD Survey"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "skin",
-                                             label = "皮肤：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = agvhd$skin,
-                                             choiceValues = agvhd$grade
-                                           ),
-                                           br(),
-                                           prettyRadioButtons(
-                                             inputId = "liver",
-                                             label = "肝脏：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = agvhd$liver,
-                                             choiceValues = agvhd$grade
-                                           ),
-                                           br(),
-                                           prettyRadioButtons(
-                                             inputId = "gastric",
-                                             label = "胃肠道：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = agvhd$gastric,
-                                             choiceValues = agvhd$grade
-                                           )
-                                           ),
-                                 card_footer(
-                                   actionButton("submit", "Submit"),
-                                   textOutput("grade"))
-                               )
-                      ),
-                      tabPanel(title = uiOutput("Survey2"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("IPI Lyphoma Survey"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "age",
-                                             label = "年龄：", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("<= 60y","> 60y"),
-                                             choiceValues = c(0,1)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "ECOG",
-                                             label = "ECOG评分：", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("活动能力完全正常","自由活动&一般轻度的体力劳动",
-                                                             "自由走动&不能从事任何劳动","轮椅或者卧床为主","卧床不起&生活不能自理","死亡"),
-                                             choiceValues = c(0,1,2,3,4,5)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "ann",
-                                             label = "临床分期：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("I","II","III","IV"),
-                                             choiceValues = c(1,2,3,4)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "out_of_node",
-                                             label = "结外器官受侵数目:", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("<= 1","> 1"),
-                                             choiceValues = c(0,1)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "ldh",
-                                             label = "LDH:", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("正常","异常"),
-                                             choiceValues = c(0,1)
-                                           )
-                                 ),
-                                 card_footer(
-                                   actionButton("submit2", "Submit"),
-                                   textOutput("grade2"))
-                               )
-                      ),
-                      tabPanel(title = uiOutput("Survey3"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("CAR-T ICANS Survey"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "attention",
-                                             label = "定向力（正确数）：年，月，城市，医院", 
-                                             selected = "4",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("0","1","2","3","4"),
-                                             choiceValues = c(0,1,2,3,4)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "named",
-                                             label = "命名能力（命名数）：说出三件物品的名称（如笔、钟表、按钮）", 
-                                             selected = "3",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("0","1","2","3"),
-                                             choiceValues = c(0,1,2,3)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "listen",
-                                             label = "听从指挥能力：听从简单指令", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("能","否"),
-                                             choiceValues = c(1,0)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "write",
-                                             label = "书写能力:写出一句完整的话", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("能","否"),
-                                             choiceValues = c(1,0)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "count",
-                                             label = "计算能力:简单计算或数数", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("能","否"),
-                                             choiceValues = c(1,0)
-                                           )
-                                 ),
-                                 card_footer(
-                                   actionButton("submit3", "Submit"),
-                                   tableOutput("grade3"))
-                               )
-                      ),
-                      tabPanel(title = uiOutput("Survey4"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("Myeloma Survey"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "HGB",
-                                             label = "血红蛋白:", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(">100 g/L","85-100 g/L","<85 g/L"),
-                                             choiceValues = c(1,2,3)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "Serum_Ca",
-                                             label = "血清钙:", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("≤2.65 mmol/L（11.5 mg/dl)",">2.65 mmol/L（11.5 mg/dl)"),
-                                             choiceValues = c(1,2)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "bone_image",
-                                             label = "骨骼检查：", 
-                                             selected = "3",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("骨骼结构正常或孤立性骨浆细胞瘤","骨骼检查中溶骨病变大于 3 处","其他"),
-                                             choiceValues = c(1,2,3)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "M_protein",
-                                             label = "血清或尿骨髓瘤蛋白：", 
-                                             selected = "3",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("1）IgG<50 g/L 2）IgA<30 g/L 3）本周蛋白<4 g/24h","1）IgG>70 g/L 2）IgA>50 g/L 3）本周蛋白>12 g/24h","以上均不符合"),
-                                             choiceValues = c(1,2,3)
-                                           ),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "serum_jg",
-                                             label = "血清肌酐水平：", 
-                                             selected = "A",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" <177 μmol/L（2.0 mg/dl）","≥177 μmol/L（2.0 mg/dl）"),
-                                             choiceValues = c("A","B")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "B2_MG",
-                                             label = "β2 微球蛋白：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" <3.5 mg/L ","[3.5-5.5) mg/L","≥5.5 mg/L"),
-                                             choiceValues = c("1","2","3")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "W_MG",
-                                             label = "白蛋白：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" ≥35 g/L"," < 35 g/L"),
-                                             choiceValues = c("1","2")
-                                           )
-                                 ),
-                                 card_footer(
-                                   textOutput("grade4"))
-                               )
-                      ),
-                      tabPanel(title = uiOutput("Survey5"),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("PHSC counts-before"),
-                                 card_body(br(),
-                                           textInput("PB_WBC",
-                                                     "外周血白细胞(10^9/L)",
-                                                     "10"),
-                                           textInput("PB_CD34",
-                                                     "外周血CD34%(%)",
-                                                     "5")
-                                 ),
-                                 card_footer(
-                                   actionButton("submit_PHSC", "Submit"),
-                                   textOutput("PHSC_before"))
-                               ),
-                               
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("PHSC counts-after"),
-                                 card_body(br(),
-                                           textInput("collection_WBC",
-                                                     "采集物白细胞(10^9/L)",
-                                                     "10"),
-                                           textInput("collection_CD34",
-                                                     "采集物CD34%(%)",
-                                                     "5"),
-                                           textInput("collection_volumn",
-                                                     "采集物体积(ml)",
-                                                     "200")
-                                 ),
-                                 card_footer(
-                                   actionButton("submit_collection", "Submit"),
-                                   textOutput("PHSC_after"))
-                               )
-                      ),
-                      tabPanel(title = uiOutput("Surveymore"),
-                               # 4Ts
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("HIT 4Ts"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "PLT_change",
-                                             label = "血小板减少：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" 下降<30%(绝对值下降<10×10^9/L) ",
-                                                             "下降30-50%(绝对值下降10-19×10^9/L)",
-                                                             "下降>50%(绝对值下降≥20×10^9/L)"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "PLT_time",
-                                             label = "血小板减少时间(Timing)：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("使用肝素≤1天,但既往无肝素接触史 ",
-                                                             "使用肝素>10天或时间不能确定,或≤1天(过去30-100天内曾经使用肝素)",
-                                                             "使用肝素5-10天或≤1天(过去30天内曾经使用肝素)"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "PLT_agg",
-                                             label = "血栓形成(Thrombosis)：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" 无 ",
-                                                             "血栓再发或加重,非坏死性皮肤损伤、可疑血栓",
-                                                             "新发血栓、皮肤坏疽、静注后急性全身反应"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "PLT_reason",
-                                             label = "其他致血小板减少原因：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("证据明确",
-                                                             "疑诊",
-                                                             "无证据"),
-                                             choiceValues = c("0","1","2")
-                                           )
-                                 ),
-                                 card_footer(
-                                   actionButton("submit_HIT", "Submit"),
-                                   textOutput("HIT_score"))
-                               ),
-                               # DIC诊断积分
-                               
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("DIC诊断积分"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "PLT",
-                                             label = "PLT(*10^9/L)：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" >100 ","<100","<50"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "FDPs",
-                                             label = "FDP :", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" 无增加（<5mg/L） ","中度增加（5-<9mg/L）","显著增加（>=9mg/L）"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "PT",
-                                             label = "PT延长(s):", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" <3） ","3-6",">6"),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "FBG",
-                                             label = "FBG纤维蛋白(g/L)：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" >1 ","<1"),
-                                             choiceValues = c("0","1")
-                                           )
-                                 ),
-                                 card_footer(
-                                   actionButton("submit_DIC", "Submit"),
-                                   textOutput("DIC_score"))
-                               ),
-                               
-                               # 化疗后骨髓抑制分度
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("化疗致血小板减少分度"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "PLT_total",
-                                             label = "PLT(*10^9/L)：", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(" [75-100) ","[50-75)",
-                                                             "[25-50)","< 25"),
-                                             choiceValues = c("1","2","3","4")
-                                           )
-                                 ),
-                                 card_footer(
-                                   textOutput("CIT_score"))
-                               ),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("糖皮质激素剂量换算"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "tpz_name",
-                                             label = "药物名称：", 
-                                             selected = "地塞米松",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("可的松","氢化可的松","强的松","强的松龙",
-                                                             "甲强龙","曲安西龙","倍他米松",
-                                                             "地塞米松",
-                                                             "氯地米松" ),
-                                             choiceValues = c("可的松","氢化可的松","强的松","强的松龙",
-                                                              "甲强龙","曲安西龙","倍他米松",
-                                                              "地塞米松",
-                                                              "氯地米松" )
-                                           ),
-                                           textInput("tpz_dose",
-                                                     "剂量（mg）：",
-                                                     "2")
-                                           
-                                 ),
-                                 card_footer(
-                                   tableOutput("tpz_table"))
-                               ),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("骨髓增生异常综合征M.D.安德森预后评分系统(MDAPSS)"),
-                                 card_body(br(),
-                                           prettyRadioButtons(
-                                             inputId = "ECOG_mds",
-                                             label = "1.体能状态(ECOG)≥2分", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("是","否"),
-                                             choiceValues = c("2","0" )
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "age_mds",
-                                             label = "2.年龄(岁)", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("60~64","≥65","<60"),
-                                             choiceValues = c("1","2","0" )
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "blast_mds",
-                                             label = "3.骨髓原始细胞比例(%)", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("5~10","11~29"),
-                                             choiceValues = c("1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "plt_mds",
-                                             label = "4.血小板(x109/L)", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("50~199","30~49","<30"),
-                                             choiceValues = c("1","2","3")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "hb_mds",
-                                             label = "5.血红蛋白(g/dL)", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("< 12 g/L","≥ 12 g/L"),
-                                             choiceValues = c("2","0")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "wbc_mds",
-                                             label = "6.白细胞(x109/L)", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c(">20","≤20"),
-                                             choiceValues = c("2","0")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "kay_mds",
-                                             label = "7.染色体核型(7号染色体异常或>2个异常)", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("是","否"),
-                                             choiceValues = c("3","0" )
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "transfunsion_mds",
-                                             label = "8.既往输血", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("是","否"),
-                                             choiceValues = c("1","0" )
-                                           )
-                                           
-                                 ),
-                                 card_footer(
-                                   tableOutput("mdapss_table"))
-                               ),
-                               
-                               #EBMT risk score
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("the EBMT risk score"),
-                                 card_body(br(),
-                                           
-                                           prettyRadioButtons(
-                                             inputId = "age_EBMT",
-                                             label = "Age of the patient, years", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("<20","20-40",">40"),
-                                             choiceValues = c("0","1","2" )
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "stage_EBMT",
-                                             label = "Disease stage", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("Early/aplastic anemia ","Intermediate","Late "),
-                                             choiceValues = c("0","1","2")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "time_EBMT",
-                                             label = "Time interval from diagnosis to transplant, months ", 
-                                             selected = "1",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("<12 or transplanted in first CR ",">12"),
-                                             choiceValues = c("0","1")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "donor_EBMT",
-                                             label = "Donor type ", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("HLA-identical sibling donor ","Unrelated donor, other "),
-                                             choiceValues = c("0","1")
-                                           ),
-                                           prettyRadioButtons(
-                                             inputId = "sex_EBMT",
-                                             label = "Donor recipient sex combination c", 
-                                             selected = "0",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("All other ","Female donor, male recipient "),
-                                             choiceValues = c("0","1")
-                                           )
-                                           
-                                 ),
-                                 card_footer(
-                                   textOutput("EBMT_table"),
-                                   plotOutput("EBMT_plt"))
-                               ),
-                               card(
-                                 full_screen = TRUE,
-                                 card_header("血清钙离子矫正（通用剂量单位）"),
-                                 card_body(br(),
-                                           textInput("Serum_Calcium",
-                                                     "Serum Calcium(mg/dL)",
-                                                     "10"),
-                                           prettyRadioButtons(
-                                             inputId = "normal_albumin",
-                                             label = "Normal albumin(g/dL)", 
-                                             selected = "4",
-                                             inline = TRUE, 
-                                             status = "danger",
-                                             fill = TRUE,
-                                             choiceNames = c("4g/dL ","4.4g/dL "),
-                                             choiceValues = c("4","4.4")
-                                           ),
-                                           textInput("Patient_albumin",
-                                                     "Patient albumin (g/dL)",
-                                                     "3.9")
-                                 ),
-                                 card_footer(
-                                   textOutput("adjust_calcium"))
-                               )
-                               
-                      )
-                    )
-                  )
-                )
+  # Application title
+  titlePanel(title = uiOutput("titlepan")),
+  
+  # Sidebar with a slider input for number of bins 
+  sidebarLayout(
+    sidebarPanel(
+      #tags$head(includeHTML(("baidu-analytics.html"))),
+      dropdown(
+        
+        tags$h3(uiOutput("advance")),
+        
+        textInput("aged",
+                  "年龄"),
+        textInput("scr",
+                  "肌酐"),
+        
+        style = "material-circle", icon = icon("sliders"),
+        status = "danger", width = "300px",
+        animate = animateOptions(
+          enter = animations$fading_entrances$fadeInLeftBig,
+          exit = animations$fading_exits$fadeOutRightBig
+        )
+      ),
+      br(),
+      textInput("weight",
+                "体重(KG)",
+                "50"),
+      textInput("height",
+                "身高(CM)",
+                "170"),
+      pickerInput("regimens",
+                  "选择方案",
+                  selected = "R-CHOP",
+                  choices = disease_list
+      ),
+      prettyRadioButtons(
+        inputId = "gender",
+        label = "选择性别:", 
+        selected = "通用",
+        inline = TRUE, 
+        status = "danger",
+        fill = TRUE,
+        choiceNames = gender_db$Chinese,
+        choiceValues = gender_db$Chinese
+      ),
+      switchInput(
+        inputId = "Id078",
+        onLabel = "En",
+        offLabel = "中"
+      )
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(
+      tabsetPanel(
+        tabPanel(title = uiOutput("Recommendation"), 
+                 card(
+                   full_screen = TRUE,
+                   card_header(card_names[1]),
+                   card_body(tableOutput("table1"))
+                 ),
+                 card(
+                   full_screen = TRUE,
+                   card_header(card_names[2]),
+                   card_body(tableOutput("table2")
+                   ),
+                   card_footer(textOutput("warn")))
+        ),
+        tabPanel(title = uiOutput("SideEffects"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("药物副作用"),
+                   card_body(tableOutput("table3"))
+                 )),
+        tabPanel(title = uiOutput("Aboutme"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("关于作者"),
+                   card_body(textOutput("about"),
+                             textOutput("formula"),
+                             textOutput("references"),
+                             plotOutput("plt"))
+                 )
+                 
+        ),
+        tabPanel(title = uiOutput("Survey"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("aGVHD Survey"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "skin",
+                               label = "皮肤：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = agvhd$skin,
+                               choiceValues = agvhd$grade
+                             ),
+                             br(),
+                             prettyRadioButtons(
+                               inputId = "liver",
+                               label = "肝脏：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = agvhd$liver,
+                               choiceValues = agvhd$grade
+                             ),
+                             br(),
+                             prettyRadioButtons(
+                               inputId = "gastric",
+                               label = "胃肠道：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = agvhd$gastric,
+                               choiceValues = agvhd$grade
+                             )
+                   ),
+                   card_footer(
+                     actionButton("submit", "Submit"),
+                     textOutput("grade"))
+                 )
+        ),
+        tabPanel(title = uiOutput("Survey2"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("IPI Lyphoma Survey"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "age",
+                               label = "年龄：", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("<= 60y","> 60y"),
+                               choiceValues = c(0,1)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "ECOG",
+                               label = "ECOG评分：", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("活动能力完全正常","自由活动&一般轻度的体力劳动",
+                                               "自由走动&不能从事任何劳动","轮椅或者卧床为主","卧床不起&生活不能自理","死亡"),
+                               choiceValues = c(0,1,2,3,4,5)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "ann",
+                               label = "临床分期：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("I","II","III","IV"),
+                               choiceValues = c(1,2,3,4)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "out_of_node",
+                               label = "结外器官受侵数目:", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("<= 1","> 1"),
+                               choiceValues = c(0,1)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "ldh",
+                               label = "LDH:", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("正常","异常"),
+                               choiceValues = c(0,1)
+                             )
+                   ),
+                   card_footer(
+                     actionButton("submit2", "Submit"),
+                     textOutput("grade2"))
+                 )
+        ),
+        tabPanel(title = uiOutput("Survey3"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("CAR-T ICANS Survey"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "attention",
+                               label = "定向力（正确数）：年，月，城市，医院", 
+                               selected = "4",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("0","1","2","3","4"),
+                               choiceValues = c(0,1,2,3,4)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "named",
+                               label = "命名能力（命名数）：说出三件物品的名称（如笔、钟表、按钮）", 
+                               selected = "3",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("0","1","2","3"),
+                               choiceValues = c(0,1,2,3)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "listen",
+                               label = "听从指挥能力：听从简单指令", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("能","否"),
+                               choiceValues = c(1,0)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "write",
+                               label = "书写能力:写出一句完整的话", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("能","否"),
+                               choiceValues = c(1,0)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "count",
+                               label = "计算能力:简单计算或数数", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("能","否"),
+                               choiceValues = c(1,0)
+                             )
+                   ),
+                   card_footer(
+                     actionButton("submit3", "Submit"),
+                     tableOutput("grade3"))
+                 )
+        ),
+        tabPanel(title = uiOutput("Survey4"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("Myeloma Survey"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "HGB",
+                               label = "血红蛋白:", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(">100 g/L","85-100 g/L","<85 g/L"),
+                               choiceValues = c(1,2,3)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "Serum_Ca",
+                               label = "血清钙:", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("≤2.65 mmol/L（11.5 mg/dl)",">2.65 mmol/L（11.5 mg/dl)"),
+                               choiceValues = c(1,2)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "bone_image",
+                               label = "骨骼检查：", 
+                               selected = "3",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("骨骼结构正常或孤立性骨浆细胞瘤","骨骼检查中溶骨病变大于 3 处","其他"),
+                               choiceValues = c(1,2,3)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "M_protein",
+                               label = "血清或尿骨髓瘤蛋白：", 
+                               selected = "3",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("1）IgG<50 g/L 2）IgA<30 g/L 3）本周蛋白<4 g/24h","1）IgG>70 g/L 2）IgA>50 g/L 3）本周蛋白>12 g/24h","以上均不符合"),
+                               choiceValues = c(1,2,3)
+                             ),
+                             
+                             prettyRadioButtons(
+                               inputId = "serum_jg",
+                               label = "血清肌酐水平：", 
+                               selected = "A",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" <177 μmol/L（2.0 mg/dl）","≥177 μmol/L（2.0 mg/dl）"),
+                               choiceValues = c("A","B")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "B2_MG",
+                               label = "β2 微球蛋白：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" <3.5 mg/L ","[3.5-5.5) mg/L","≥5.5 mg/L"),
+                               choiceValues = c("1","2","3")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "W_MG",
+                               label = "白蛋白：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" ≥35 g/L"," < 35 g/L"),
+                               choiceValues = c("1","2")
+                             )
+                   ),
+                   card_footer(
+                     textOutput("grade4"))
+                 )
+        ),
+        tabPanel(title = uiOutput("Survey5"),
+                 card(
+                   full_screen = TRUE,
+                   card_header("PHSC counts-before"),
+                   card_body(br(),
+                             textInput("PB_WBC",
+                                       "外周血白细胞(10^9/L)",
+                                       "10"),
+                             textInput("PB_CD34",
+                                       "外周血CD34%(%)",
+                                       "5")
+                   ),
+                   card_footer(
+                     actionButton("submit_PHSC", "Submit"),
+                     textOutput("PHSC_before"))
+                 ),
+                 
+                 card(
+                   full_screen = TRUE,
+                   card_header("PHSC counts-after"),
+                   card_body(br(),
+                             textInput("collection_WBC",
+                                       "采集物白细胞(10^9/L)",
+                                       "10"),
+                             textInput("collection_CD34",
+                                       "采集物CD34%(%)",
+                                       "5"),
+                             textInput("collection_volumn",
+                                       "采集物体积(ml)",
+                                       "200")
+                   ),
+                   card_footer(
+                     actionButton("submit_collection", "Submit"),
+                     textOutput("PHSC_after"))
+                 )
+        ),
+        tabPanel(title = uiOutput("Surveymore"),
+                 # 4Ts
+                 card(
+                   full_screen = TRUE,
+                   card_header("HIT 4Ts"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "PLT_change",
+                               label = "血小板减少：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" 下降<30%(绝对值下降<10×10^9/L) ",
+                                               "下降30-50%(绝对值下降10-19×10^9/L)",
+                                               "下降>50%(绝对值下降≥20×10^9/L)"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "PLT_time",
+                               label = "血小板减少时间(Timing)：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("使用肝素≤1天,但既往无肝素接触史 ",
+                                               "使用肝素>10天或时间不能确定,或≤1天(过去30-100天内曾经使用肝素)",
+                                               "使用肝素5-10天或≤1天(过去30天内曾经使用肝素)"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "PLT_agg",
+                               label = "血栓形成(Thrombosis)：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" 无 ",
+                                               "血栓再发或加重,非坏死性皮肤损伤、可疑血栓",
+                                               "新发血栓、皮肤坏疽、静注后急性全身反应"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "PLT_reason",
+                               label = "其他致血小板减少原因：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("证据明确",
+                                               "疑诊",
+                                               "无证据"),
+                               choiceValues = c("0","1","2")
+                             )
+                   ),
+                   card_footer(
+                     actionButton("submit_HIT", "Submit"),
+                     textOutput("HIT_score"))
+                 ),
+                 # DIC诊断积分
+                 
+                 card(
+                   full_screen = TRUE,
+                   card_header("DIC诊断积分"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "PLT",
+                               label = "PLT(*10^9/L)：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" >100 ","<100","<50"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "FDPs",
+                               label = "FDP :", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" 无增加（<5mg/L） ","中度增加（5-<9mg/L）","显著增加（>=9mg/L）"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "PT",
+                               label = "PT延长(s):", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" <3） ","3-6",">6"),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "FBG",
+                               label = "FBG纤维蛋白(g/L)：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" >1 ","<1"),
+                               choiceValues = c("0","1")
+                             )
+                   ),
+                   card_footer(
+                     actionButton("submit_DIC", "Submit"),
+                     textOutput("DIC_score"))
+                 ),
+                 
+                 # 化疗后骨髓抑制分度
+                 card(
+                   full_screen = TRUE,
+                   card_header("化疗致血小板减少分度"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "PLT_total",
+                               label = "PLT(*10^9/L)：", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(" [75-100) ","[50-75)",
+                                               "[25-50)","< 25"),
+                               choiceValues = c("1","2","3","4")
+                             )
+                   ),
+                   card_footer(
+                     textOutput("CIT_score"))
+                 ),
+                 card(
+                   full_screen = TRUE,
+                   card_header("糖皮质激素剂量换算"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "tpz_name",
+                               label = "药物名称：", 
+                               selected = "地塞米松",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("可的松","氢化可的松","强的松","强的松龙",
+                                               "甲强龙","曲安西龙","倍他米松",
+                                               "地塞米松",
+                                               "氯地米松" ),
+                               choiceValues = c("可的松","氢化可的松","强的松","强的松龙",
+                                                "甲强龙","曲安西龙","倍他米松",
+                                                "地塞米松",
+                                                "氯地米松" )
+                             ),
+                             textInput("tpz_dose",
+                                       "剂量（mg）：",
+                                       "2")
+                             
+                   ),
+                   card_footer(
+                     tableOutput("tpz_table"))
+                 ),
+                 card(
+                   full_screen = TRUE,
+                   card_header("骨髓增生异常综合征M.D.安德森预后评分系统(MDAPSS)"),
+                   card_body(br(),
+                             prettyRadioButtons(
+                               inputId = "ECOG_mds",
+                               label = "1.体能状态(ECOG)≥2分", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("是","否"),
+                               choiceValues = c("2","0" )
+                             ),
+                             prettyRadioButtons(
+                               inputId = "age_mds",
+                               label = "2.年龄(岁)", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("60~64","≥65","<60"),
+                               choiceValues = c("1","2","0" )
+                             ),
+                             prettyRadioButtons(
+                               inputId = "blast_mds",
+                               label = "3.骨髓原始细胞比例(%)", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("5~10","11~29"),
+                               choiceValues = c("1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "plt_mds",
+                               label = "4.血小板(x109/L)", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("50~199","30~49","<30"),
+                               choiceValues = c("1","2","3")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "hb_mds",
+                               label = "5.血红蛋白(g/dL)", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("< 12 g/L","≥ 12 g/L"),
+                               choiceValues = c("2","0")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "wbc_mds",
+                               label = "6.白细胞(x109/L)", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c(">20","≤20"),
+                               choiceValues = c("2","0")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "kay_mds",
+                               label = "7.染色体核型(7号染色体异常或>2个异常)", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("是","否"),
+                               choiceValues = c("3","0" )
+                             ),
+                             prettyRadioButtons(
+                               inputId = "transfunsion_mds",
+                               label = "8.既往输血", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("是","否"),
+                               choiceValues = c("1","0" )
+                             )
+                             
+                   ),
+                   card_footer(
+                     tableOutput("mdapss_table"))
+                 ),
+                 
+                 #EBMT risk score
+                 card(
+                   full_screen = TRUE,
+                   card_header("the EBMT risk score"),
+                   card_body(br(),
+                             
+                             prettyRadioButtons(
+                               inputId = "age_EBMT",
+                               label = "Age of the patient, years", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("<20","20-40",">40"),
+                               choiceValues = c("0","1","2" )
+                             ),
+                             prettyRadioButtons(
+                               inputId = "stage_EBMT",
+                               label = "Disease stage", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("Early/aplastic anemia ","Intermediate","Late "),
+                               choiceValues = c("0","1","2")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "time_EBMT",
+                               label = "Time interval from diagnosis to transplant, months ", 
+                               selected = "1",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("<12 or transplanted in first CR ",">12"),
+                               choiceValues = c("0","1")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "donor_EBMT",
+                               label = "Donor type ", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("HLA-identical sibling donor ","Unrelated donor, other "),
+                               choiceValues = c("0","1")
+                             ),
+                             prettyRadioButtons(
+                               inputId = "sex_EBMT",
+                               label = "Donor recipient sex combination c", 
+                               selected = "0",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("All other ","Female donor, male recipient "),
+                               choiceValues = c("0","1")
+                             )
+                             
+                   ),
+                   card_footer(
+                     textOutput("EBMT_table"),
+                     plotOutput("EBMT_plt"))
+                 ),
+                 card(
+                   full_screen = TRUE,
+                   card_header("血清钙离子矫正（通用剂量单位）"),
+                   card_body(br(),
+                             textInput("Serum_Calcium",
+                                       "Serum Calcium(mg/dL)",
+                                       "10"),
+                             prettyRadioButtons(
+                               inputId = "normal_albumin",
+                               label = "Normal albumin(g/dL)", 
+                               selected = "4",
+                               inline = TRUE, 
+                               status = "danger",
+                               fill = TRUE,
+                               choiceNames = c("4g/dL ","4.4g/dL "),
+                               choiceValues = c("4","4.4")
+                             ),
+                             textInput("Patient_albumin",
+                                       "Patient albumin (g/dL)",
+                                       "3.9")
+                   ),
+                   card_footer(
+                     textOutput("adjust_calcium"))
+                 )
+                 
+        )
+      )
+    )
+  )
 )
 
 
@@ -864,7 +846,7 @@ server <- function(input, output) {
   output$Recommendation = renderText({
     withProgress(message = 'loading ...',
                  detail = 'This may take a while...', value = 1, {
-    switch_fun(input$Id078, "Recommendation","方案推荐") 
+                   switch_fun(input$Id078, "Recommendation","方案推荐") 
                  })
   })
   output$SideEffects = renderText({
@@ -932,16 +914,7 @@ server <- function(input, output) {
   
   
   regimen <- reactive({
-    n=1
-    drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
-    while (file.exists(drug_path) == FALSE && n <= length(disease_names)-1) {
-      n = n+1
-      drug_path = paste0(getwd(), "/data/",disease_names[n],"/",input$regimens, ".xlsx")
-    }
-    
-    read_excel(drug_path,
-               col_types = c("text", "text", "numeric", 
-                             "numeric", "numeric", "numeric", "text")) %>% 
+    regmen_list[[input$regimens]] %>% 
       get_druglist_title(1,mod()) 
     
   })
@@ -973,16 +946,16 @@ server <- function(input, output) {
     if (mod() == 1){
       side_effect_database <- database %>% 
         update_druglist_title(mod()) %>% 
-        filter( 药名 %in% drug_list) %>% 
-        select(药名,"副作用/SideEffect","可能的解救措施/Measures") %>% 
-        distinct()
+        dplyr::filter( 药名 %in% drug_list) %>% 
+        dplyr::select(药名,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        dplyr::distinct()
       colnames(side_effect_database) <- c("药名","副作用","可能的解救措施")
     }else{
       side_effect_database <- database %>% 
         update_druglist_title(mod()) %>% 
-        filter( Drugs %in% drug_list) %>% 
-        select(Drugs,"副作用/SideEffect","可能的解救措施/Measures") %>% 
-        distinct()
+        dplyr::filter( Drugs %in% drug_list) %>% 
+        dplyr::select(Drugs,"副作用/SideEffect","可能的解救措施/Measures") %>% 
+        dplyr::distinct()
       colnames(side_effect_database) <- c("Drugs","Side Effects","Measures")
     }
     
@@ -1009,16 +982,16 @@ server <- function(input, output) {
   output$table2 <- renderTable({
     withProgress(message = 'Calculating ...',
                  detail = 'This may take a while...', value = 1, {
-    if (mod() == 1){
-      as.data.frame(calculate_regimen()) %>% 
-        select(-"类型")
-    }else{
-      df <- as.data.frame(calculate_regimen()) %>% 
-        select(-"类型")
-      colnames(df) <- c("Drugs","Guideline Dose(mg/m2)","Calculation","Min Dose",
-                        "Max Dose","Unit")
-      df <- df
-    }
+                   if (mod() == 1){
+                     as.data.frame(calculate_regimen()) %>% 
+                       dplyr::select(-"类型")
+                   }else{
+                     df <- as.data.frame(calculate_regimen()) %>% 
+                       dplyr::select(-"类型")
+                     colnames(df) <- c("Drugs","Guideline Dose(mg/m2)","Calculation","Min Dose",
+                                       "Max Dose","Unit")
+                     df <- df
+                   }
                  })
   })
   output$warn <- renderText({
@@ -1036,11 +1009,11 @@ server <- function(input, output) {
   output$about <- renderText({
     withProgress(message = 'Reading informations ...',
                  detail = 'This may take a while...', value = 1, {
-    if (mod() == 1){
-      print(paste("本应用程序由来自GmadeStudio HBSig和CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
-    } else {
-      print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from GmadeStudio HBSig and the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
-    }
+                   if (mod() == 1){
+                     print(paste("本应用程序由来自GmadeStudio HBSig和CMU1H的Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding & Prof.Xiaoxue Wang以及西安交通大学社会科学研究所的Dr.Linfeng开发。"))
+                   } else {
+                     print(paste("This application is under developed by Yanhua Zheng,Dr.Qinchuan Yu, Xin Ding and Prof.Xiaoxue Wang from GmadeStudio HBSig and the department of hematology,CMU1H, and Dr.Linfeng He from Institute for Empirical Social Science Research,XJTU. "))
+                   }
                  })
   })
   
@@ -1063,8 +1036,8 @@ server <- function(input, output) {
   
   
   output$plt <- renderPlot({
-    img <- jpeg::readJPEG(paste0(getwd(),"/image/logo.jpg"))
-    plot(as.raster(img))
+    data("logo")
+    plot(logo)
   })
   
   
@@ -1167,7 +1140,7 @@ server <- function(input, output) {
     }
   })
   output$grade4 <- renderText({
-   
+    
     print(paste("该病人是：",ds(),paste0(input$serum_jg,"亚型"),iss()))
   })
   
@@ -1234,14 +1207,7 @@ server <- function(input, output) {
   })
   output$tpz_table <- renderTable({
     
-    tpz_refertable <- data.frame(
-      tpznames = c("可的松","氢化可的松","强的松","强的松龙",
-                   "甲强龙","曲安西龙","倍他米松",
-                   "地塞米松",
-                   "氯地米松" ),
-      basedose = c(25,20,5,5,4,4,0.8,0.75,0.5)
-    ) 
-    rownames(tpz_refertable) <- tpz_refertable$tpznames
+    data("tpz_refertable")
     input_dose_times <- as.numeric(input$tpz_dose) / tpz_refertable[input$tpz_name,][["basedose"]]
     tpz_refertable %>% 
       dplyr::mutate(dose = basedose * input_dose_times) %>% 
@@ -1253,13 +1219,7 @@ server <- function(input, output) {
   })
   output$mdapss_table <- renderTable({
     
-    mdapss_refertable <- data.frame(
-      积分 = c("0-4","5-6","7-8",">=9"),
-      分组 = c("低危","中危1","中危2","高危"),
-      中位生存月 = c(54,25,14,6),
-      三年生存率 = c(63,34,16,4),
-      index = c(4,6,8,9)
-    ) 
+    data("mdapss_refertable")
     index_sum <- c(input$transfunsion_mds,input$kay_mds,input$wbc_mds,
                    input$hb_mds,input$plt_mds,input$blast_mds,
                    input$age_mds,input$ECOG_mds) %>% 
@@ -1287,8 +1247,8 @@ server <- function(input, output) {
   })
   
   output$EBMT_plt <- renderPlot({
-    img <- jpeg::readJPEG(paste0(getwd(),"/image/EBMT.jpg"))
-    plot(as.raster(img))
+    data("EBMTfig")
+    plot(EBMTfig)
   })
   
   output$adjust_calcium <- renderText({
