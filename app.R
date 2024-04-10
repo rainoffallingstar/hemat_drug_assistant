@@ -1054,9 +1054,9 @@ server <- function(input, output) {
   
   output$references <- renderText({
     if (mod() == 1){
-      print("此外，引用的药物剂量和方案主要来自于中国临床血液学方案手册，Uptodate，USMLE Step 1＆2和BRS药理学。如果你在论文写作中使用了本软件，请引用我们：Yanhua Zheng. (2023). rainoffallingstar/hemat_drug_assistant: release (v0.01). Zenodo. https://doi.org/10.5281/zenodo.8248068")
+      print("此外，引用的药物剂量和方案主要来自于中国临床血液学方案手册，Uptodate，USMLE Step 1＆2和BRS药理学。如果你在论文写作中使用了本软件，请引用我们Yanhua Zheng, Qinchuan, Y., Xin, D., Linfeng, H., & Xiaoxue, W. (2024). rainoffallingstar/hemat_drug_assistant: release (v0.02). Zenodo. https://doi.org/10.5281/zenodo.10951894")
     } else {
-      print(" In addition, the citated drug does and regimens are mainly taken from an chinese regimens handbook for clinical hematology，Uptodate，USMLE Step 1&2 and BRS Pharmacology. If you use our aplication in writing papers,please cite us as the following: Yanhua Zheng. (2023). rainoffallingstar/hemat_drug_assistant: release (v0.01). Zenodo. https://doi.org/10.5281/zenodo.8248068")
+      print(" In addition, the citated drug does and regimens are mainly taken from an chinese regimens handbook for clinical hematology，Uptodate，USMLE Step 1&2 and BRS Pharmacology. If you use our aplication in writing papers,please cite us as the following: Yanhua Zheng, Qinchuan, Y., Xin, D., Linfeng, H., & Xiaoxue, W. (2024). rainoffallingstar/hemat_drug_assistant: release (v0.02). Zenodo. https://doi.org/10.5281/zenodo.10951894")
     }
   })
   
