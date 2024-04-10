@@ -3,7 +3,7 @@
 # Body mass index, kg/m2 = weight, kg / (height, m)2
 # Body surface area (the Mosteller formula), m2 = [ Height, cm x Weight, kg  / 3600 ]1/2
 #install.packages("bslib")
-devtools::install_github("rainoffallingstar/mellon")
+#devtools::install_github("rainoffallingstar/mellon")
 library(mellon)
 library(shiny)
 library(shinyWidgets)
