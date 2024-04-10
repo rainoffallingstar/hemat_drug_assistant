@@ -22,6 +22,7 @@ jobs:
     - name: Install mellon
       run: |
           pak::pak("rainoffallingstar/mellon")
+      shell: Rscript {0}
 
     - name: Deploy to RStudio Connect
       run: |
