@@ -107,7 +107,7 @@ ui <- page_fluid(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      #tags$head(includeHTML(("baidu-analytics.html"))),
+      tags$head(includeHTML(("baidu-analytics.html"))),
       dropdown(
         
         tags$h3(uiOutput("advance")),
