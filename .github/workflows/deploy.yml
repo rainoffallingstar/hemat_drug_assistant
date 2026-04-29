@@ -42,9 +42,10 @@ jobs:
 
       - name: Deploy to shinyapps.io
         env:
-          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+          RSCONNECT_ACCOUNT:  ${{ secrets.RSCONNECT_ACCOUNT }}
+          RSCONNECT_TOKEN:    ${{ secrets.RSCONNECT_TOKEN }}
+          RSCONNECT_SECRET:   ${{ secrets.RSCONNECT_SECRET }}
         run: |
-          rsconnect add --account rainoffallingstar --name rainoffallingstar \
-            --token "$SHINYAPPS_TOKEN" --secret "$SHINYAPPS_SECRET"
+          rsconnect add --account "$RSCONNECT_ACCOUNT" --name "$RSCONNECT_ACCOUNT" \
+            --token "$RSCONNECT_TOKEN" --secret "$RSCONNECT_SECRET"
           bash scripts/deploy_shinyapps.sh
