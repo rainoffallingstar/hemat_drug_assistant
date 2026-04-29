@@ -33,6 +33,7 @@ jobs:
         run: rm -rf www/assets && cp -r ui/dist/* www/
 
       - name: Setup Python
+        id: python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -45,7 +46,7 @@ jobs:
           RSCONNECT_ACCOUNT:  ${{ secrets.RSCONNECT_ACCOUNT }}
           RSCONNECT_TOKEN:    ${{ secrets.RSCONNECT_TOKEN }}
           RSCONNECT_SECRET:   ${{ secrets.RSCONNECT_SECRET }}
-          PYTHON_BIN:         python3
+          PYTHON_BIN:         ${{ steps.python.outputs.python-path }}
         run: |
           rsconnect add --account "$RSCONNECT_ACCOUNT" --name "$RSCONNECT_ACCOUNT" \
             --token "$RSCONNECT_TOKEN" --secret "$RSCONNECT_SECRET"
