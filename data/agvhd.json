@@ -1,0 +1,32 @@
+[
+  {
+    "grade": 0,
+    "skin": "无皮疹",
+    "liver": "总胆红素<34umol/L",
+    "gastric": "无腹泻（或<500ml/d）"
+  },
+  {
+    "grade": 1,
+    "skin": "皮疹面积<25%",
+    "liver": "总胆红素34-50umol/L",
+    "gastric": "腹泻>500ml/d或持续恶心"
+  },
+  {
+    "grade": 2,
+    "skin": "皮疹面积25%-50%",
+    "liver": "总胆红素51-102umol/L",
+    "gastric": "腹泻>1000ml/d"
+  },
+  {
+    "grade": 3,
+    "skin": "全身皮疹",
+    "liver": "总胆红素103-255umol/L",
+    "gastric": "腹泻>1500ml/d"
+  },
+  {
+    "grade": 4,
+    "skin": "全身皮疹伴水疱、脱皮",
+    "liver": "总胆红素>255umol/L",
+    "gastric": "严重腹痛伴肠梗阻"
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "tpznames": "可的松",
+    "basedose": 25,
+    "_row": "可的松"
+  },
+  {
+    "tpznames": "氢化可的松",
+    "basedose": 20,
+    "_row": "氢化可的松"
+  },
+  {
+    "tpznames": "强的松",
+    "basedose": 5,
+    "_row": "强的松"
+  },
+  {
+    "tpznames": "强的松龙",
+    "basedose": 5,
+    "_row": "强的松龙"
+  },
+  {
+    "tpznames": "甲强龙",
+    "basedose": 4,
+    "_row": "甲强龙"
+  },
+  {
+    "tpznames": "曲安西龙",
+    "basedose": 4,
+    "_row": "曲安西龙"
+  },
+  {
+    "tpznames": "倍他米松",
+    "basedose": 0.8,
+    "_row": "倍他米松"
+  },
+  {
+    "tpznames": "地塞米松",
+    "basedose": 0.75,
+    "_row": "地塞米松"
+  },
+  {
+    "tpznames": "氯地米松",
+    "basedose": 0.5,
+    "_row": "氯地米松"
+  }
+]

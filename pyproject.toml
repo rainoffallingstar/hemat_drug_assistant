@@ -1,0 +1,7 @@
+[project]
+name = "mellon"
+version = "0.1.0"
+requires-python = ">=3.9,<3.13"
+
+[tool.shiny]
+app_mode = "shiny"

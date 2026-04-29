@@ -1,0 +1,344 @@
+[
+  {
+    "药名": "左旋门冬酰胺酶(l-asp)",
+    "Drugs": "L-asparaginase",
+    "副作用/SideEffect": "pancreatitis,L-asparaginase is minimally marrow suppressive; it is toxic to the liver\nand pancreas. Hypersensitivity and anaphylactic shock to the protein may develop.\nHemorrhaging may occur due to the inhibition of clotting factor synthesis",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": null,
+    "Drugs": null,
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "依托泊苷",
+    "Drugs": "Etoposide",
+    "副作用/SideEffect": "Myelosuppression, alopecia",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "亚砷酸",
+    "Drugs": "Arsenous acid",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "维奈克拉",
+    "Drugs": "Venclexta",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "四氢叶酸钙",
+    "Drugs": "Calcium folinate",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "顺铂",
+    "Drugs": "Cisplatin",
+    "副作用/SideEffect": "Nephrotoxicity (eg, Fanconi syndrome; prevent with amifostine), peripheral neuropathy, ototoxicity.This agent almost always produces\nnausea and vomiting. Cisplatin is only moderately myelosuppressive.",
+    "可能的解救措施/Measures": "prevented by hydration and diuresis"
+  },
+  {
+    "药名": "柔红霉素(dnr)",
+    "Drugs": "Daunorubicin",
+    "副作用/SideEffect": "These agents produce dose-limiting acute and chronic cardiomyopa-\nthies. The acute form includes arrhythmias and myocarditis that are usually transient\nand clinically inconsequential. The chronic form, related to the generation of free\nradicals, may result in heart failure. They are also myelosuppressive. Mucositis is also\nnoted.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "全反式维甲酸",
+    "Drugs": "Atra",
+    "副作用/SideEffect": "“Differentiation syndrome” with\nrespiratory distress, pleural and\npericardial effusions, CNS symptoms",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "去甲氧柔红霉素",
+    "Drugs": "Demethoxydaunorubicin",
+    "副作用/SideEffect": "These agents produce dose-limiting acute and chronic cardiomyopa-\nthies. The acute form includes arrhythmias and myocarditis that are usually transient\nand clinically inconsequential. The chronic form, related to the generation of free\nradicals, may result in heart failure. They are also myelosuppressive. Mucositis is also\nnoted.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "强的松龙(pred)",
+    "Drugs": "Prednisolone",
+    "副作用/SideEffect": "ACTH suppression,\ncushingoid state,\nosteoporosis, GI distress,\nglaucoma",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "泼尼松",
+    "Drugs": "Prednisone",
+    "副作用/SideEffect": "ACTH suppression,\ncushingoid state,\nosteoporosis, GI distress,\nglaucoma",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "硼替佐米",
+    "Drugs": "Bortezomib",
+    "副作用/SideEffect": "GI complaints are the most common side effects of bortezomib, but peripheral neuropa-\nthy has also been reported.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "米托蒽醌",
+    "Drugs": "Mitoxantrone",
+    "副作用/SideEffect": "These agents produce dose-limiting acute and chronic cardiomyopa-\nthies. The acute form includes arrhythmias and myocarditis that are usually transient\nand clinically inconsequential. The chronic form, related to the generation of free\nradicals, may result in heart failure. They are also myelosuppressive. Mucositis is also\nnoted.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "美斯钠",
+    "Drugs": "Mesna",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "美法仑",
+    "Drugs": "Melphalan",
+    "副作用/SideEffect": "Its toxicity is related mostly to\nmyelosuppression. Nausea and vomiting are infrequent; there is no alopecia.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "利妥昔单抗",
+    "Drugs": "Rituximab",
+    "副作用/SideEffect": "risk of PML in patients with\nJC virus",
+    "可能的解救措施/Measures": "给药30分钟前预先使用苯海拉明(50mg，口服)和对乙酰氨基酚(650mg，口服)"
+  },
+  {
+    "药名": "来那度胺",
+    "Drugs": "Lenalidomide",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "克拉屈滨(cl)",
+    "Drugs": "Cladribine",
+    "副作用/SideEffect": "transiently Myelosuppression",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "克拉霉素",
+    "Drugs": "Clarithromycin",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "卡铂",
+    "Drugs": "Carboplatin",
+    "副作用/SideEffect": "This agent has similar but less severe toxicities\nthan cisplatin.Nephrotoxicity (eg, Fanconi syndrome; prevent with amifostine), peripheral neuropathy, ototoxicity.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "甲氨蝶呤mtx",
+    "Drugs": "Methotrexate",
+    "副作用/SideEffect": "Myelosuppression (reversible\nwith leucovorin “rescue”),\nhepatotoxicity, mucositis (eg,\nmouth ulcers), pulmonary\nfibrosis, folate deficiency\n(teratogenic), nephrotoxicity",
+    "可能的解救措施/Measures": "Dose monitoring and leucovorin (folinic acid)\n“rescue” are important adjuncts to successful therapy (leucovorin is converted to an\nessential cofactor for thymidylate sythetase)."
+  },
+  {
+    "药名": "环磷酰胺(ctx)",
+    "Drugs": "Cyclophosphamide",
+    "副作用/SideEffect": "1. BMS, bone marrow suppression 2.hemorrhagic cystitis (mesna,\ntraps acrolein and is protective)",
+    "可能的解救措施/Measures": "Acrolein-induced hemorrhagic cystitis can be prevented by co-administration of the sulfhy-\ndryl compound 2-mercaptoethanesulfonate (MESNA), which neutralizes acrolein at acidic\npH in the urine, or acetylcysteine, or ample hydration."
+  },
+  {
+    "药名": "环磷酰氨(ctx)",
+    "Drugs": "Cyclophosphamide",
+    "副作用/SideEffect": "1. BMS, bone marrow suppression 2.hemorrhagic cystitis (mesna,\ntraps acrolein and is protective)",
+    "可能的解救措施/Measures": "Acrolein-induced hemorrhagic cystitis can be prevented by co-administration of the sulfhy-\ndryl compound 2-mercaptoethanesulfonate (MESNA), which neutralizes acrolein at acidic\npH in the urine, or acetylcysteine, or ample hydration."
+  },
+  {
+    "药名": "高三尖杉酯碱",
+    "Drugs": "Homoharringtonine",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "氟达拉滨",
+    "Drugs": "Fludarabine",
+    "副作用/SideEffect": "myelosuppression",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "多柔比星",
+    "Drugs": "Doxorubicin",
+    "副作用/SideEffect": "Dilated cardiomyopathy\n(often irreversible; prevent\nwith dexrazoxane),\nmyelosuppression, alopecia",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "地西他滨",
+    "Drugs": "Decitabine",
+    "副作用/SideEffect": "Myelosuppression",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "地塞米松(dex)",
+    "Drugs": "Dexamethasone",
+    "副作用/SideEffect": "ACTH suppression,\ncushingoid state,\nosteoporosis, GI distress,\nglaucoma",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "氮芥",
+    "Drugs": "Mechlorethamine",
+    "副作用/SideEffect": "CNS toxicity (convulsions,\ndizziness, ataxia)；These agents are markedly myelosuppressive, but with delayed effect,\npossibly up to 6 weeks. The use of these agents may also result in renal failure.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "达雷妥尤单抗(daratumumab)",
+    "Drugs": "Daratumumab",
+    "副作用/SideEffect": "Infusion-related reactions",
+    "可能的解救措施/Measures": "给药30分钟前预先使用苯海拉明(50mg，口服)和对乙酰氨基酚(650mg，口服)"
+  },
+  {
+    "药名": "达卡巴嗪",
+    "Drugs": "Dacarbazine",
+    "副作用/SideEffect": "Dacarbazine is moderately myelosuppressive. Nausea and vomiting\noccur in 90% of patients. Flu-like symptoms also occur.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "长春新碱(vcr)",
+    "Drugs": "Vincristine",
+    "副作用/SideEffect": "BMS & Neurotoxicity；Vincristine (crisps the nerves):\nneurotoxicity (axonal\nneuropathy), constipation\n(including ileus)",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "长春碱",
+    "Drugs": "Vinblastine",
+    "副作用/SideEffect": "BMS & Neurotoxicity；Vinblastine (blasts the\nmarrow): myelosuppression",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "博来霉素",
+    "Drugs": "Bleomycin",
+    "副作用/SideEffect": "Pneumonitis, pulmonary fibrosis，skin\nhyperpigmentation,the anaphylactoid-like reactions of profound\nhyperthermia, hypotension, and cardio-respiratory collapse. Bleomycin causes\nminimal myelosuppression.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "丙卡巴肼",
+    "Drugs": "Procarbazine",
+    "副作用/SideEffect": "BMS, leukemogenic",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "苯达莫司汀（bendamustine）",
+    "Drugs": "Bendamustine",
+    "副作用/SideEffect": "These agents are markedly myelosuppressive, but with delayed effect,\npossibly up to 6 weeks. The use of these agents may also result in renal failure",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "卡莫司汀",
+    "Drugs": "Carmustine",
+    "副作用/SideEffect": "These agents are markedly myelosuppressive, but with delayed effect,\npossibly up to 6 weeks. The use of these agents may also result in renal failure",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "阿扎胞苷(aza)",
+    "Drugs": "Azacytidine",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "阿糖胞苷(ara-c)",
+    "Drugs": "Cytarabine",
+    "副作用/SideEffect": "Myelosuppression,and can produce severe leukopenia,\nthrombocytopenia, anemia, and GI disturbances.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "阿仑单抗",
+    "Drugs": "Alemtuzumab",
+    "副作用/SideEffect": "Infusion-related reactions",
+    "可能的解救措施/Measures": "给药30分钟前预先使用苯海拉明(50mg，口服)和对乙酰氨基酚(650mg，口服)"
+  },
+  {
+    "药名": "阿克拉霉素",
+    "Drugs": "Aclarubicin",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "椎管内注射化疗药物",
+    "Drugs": "It-double",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "6-巯基嘌呤（6-mp）",
+    "Drugs": "6-mp",
+    "副作用/SideEffect": "Myelosuppression; GI, liver\ntoxicity\n6-MP is inactivated by\nxanthine oxidase ( toxicity\nwith allopurinol or febuxostat)",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "培门冬酶",
+    "Drugs": "Pegaspargase（peg-asp）",
+    "副作用/SideEffect": "pancreatitis,L-asparaginase is minimally marrow suppressive; it is toxic to the liver\nand pancreas. Hypersensitivity and anaphylactic shock to the protein may develop.\nHemorrhaging may occur due to the inhibition of clotting factor synthesis",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "白消安",
+    "Drugs": "Busulfan",
+    "副作用/SideEffect": "It produces adverse effects related to myelosuppression. It only\noccasionally produces nausea and vomiting. In high doses, it produces a rare but some-\ntimes fatal pulmonary fibrosis, “busulfan lung.” Its use is associated with adrenal insuf-\nficiency and skin pigmentation.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "阿霉素",
+    "Drugs": "Adriamycin",
+    "副作用/SideEffect": "Dilated cardiomyopathy\n(often irreversible; prevent\nwith dexrazoxane),\nmyelosuppression, alopecia",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "抗胸腺球蛋白",
+    "Drugs": "Anti-thymocyte globulin",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "G-csf",
+    "Drugs": "G-csf",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "Tbi",
+    "Drugs": "Tbi",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "塞替派",
+    "Drugs": "Thiotepa",
+    "副作用/SideEffect": "Myelosuppression is a major toxicity.",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "（或）氟达拉滨（fl）",
+    "Drugs": "Fludarabine",
+    "副作用/SideEffect": "myelosuppression",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "（C1之后）利妥昔单抗",
+    "Drugs": "Rituximab",
+    "副作用/SideEffect": "risk of PML in patients with\nJC virus",
+    "可能的解救措施/Measures": "给药30分钟前预先使用苯海拉明(50mg，口服)和对乙酰氨基酚(650mg，口服)"
+  },
+  {
+    "药名": "（C1）利妥昔单抗",
+    "Drugs": "Rituximab",
+    "副作用/SideEffect": "risk of PML in patients with\nJC virus",
+    "可能的解救措施/Measures": "给药30分钟前预先使用苯海拉明(50mg，口服)和对乙酰氨基酚(651mg，口服)"
+  },
+  {
+    "药名": "异环磷酰胺",
+    "Drugs": "Ifosfamide",
+    "副作用/SideEffect": "Myelosuppression, SIADH,\nFanconi syndrome\n(ifosfamide)",
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "吉西他滨",
+    "Drugs": "Gemcitabine",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  },
+  {
+    "药名": "奥沙利铂",
+    "Drugs": "Oxaliplatin",
+    "副作用/SideEffect": null,
+    "可能的解救措施/Measures": null
+  }
+]

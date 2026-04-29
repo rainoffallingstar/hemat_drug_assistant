@@ -1,0 +1,83 @@
+{
+  "ALL": [
+    "CAM-all-Consolidation",
+    "Hyper-CVAD-MTX-Ara-C",
+    "VDCLP-ALL",
+    "VDCP-ALL-late"
+  ],
+  "AML": [
+    "APL-tripple-induce",
+    "APL_consolidation",
+    "Aza-Venetoclax",
+    "CAG",
+    "DA",
+    "DAC",
+    "DCAG",
+    "FL-CL-AG",
+    "HA",
+    "HAA",
+    "HAD",
+    "IA",
+    "large-Ara-AML",
+    "MA",
+    "median-Ara-AML"
+  ],
+  "HCT-MAC": [
+    "BEAM-CMU1H-special",
+    "BEAM",
+    "Bu4-Cy",
+    "CVB",
+    "Cy-TBI",
+    "Flu-Bu4",
+    "HD-Melphalan"
+  ],
+  "HCT-NMA": [
+    "Flu-TBI",
+    "TLI-ATG"
+  ],
+  "HCT-RIC": [
+    "Flu-Bu2-3",
+    "Flu-Bu3-TT",
+    "Flu-Cy",
+    "Flu-Mel"
+  ],
+  "JALSG-ALL202-O": [
+    "A-Induction",
+    "C-1+4(Consolidation)",
+    "C-2+5(Hd-MTX group)",
+    "C-2+5(ld-MTX group)",
+    "C-3",
+    "Maintenance "
+  ],
+  "lymphoma": [
+    "ABVD",
+    "Bendamustine-R",
+    "Bendamustine",
+    "BVR",
+    "CCR-CLL-SLL",
+    "CFAR",
+    "CHOP-E",
+    "DA-EPOCH-R",
+    "DHAP",
+    "FCM-R",
+    "FND-R",
+    "GDP-R",
+    "GemOx-R",
+    "Hyper-CVAD-MTX-Ara-C-R",
+    "ICE",
+    "MINE",
+    "mini-CHOP",
+    "MOPP",
+    "MTX-PNSL",
+    "R-CHOP",
+    "Standford-V",
+    "Pola-R-CHP",
+    "A+AVD"
+  ],
+  "MM": [
+    "Daratumumab",
+    "MP",
+    "VAD",
+    "VRD"
+  ]
+}

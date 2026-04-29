@@ -1,0 +1,50 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build Go binary (Linux)
+        run: GOOS=linux GOARCH=amd64 go build -o bin/mellon-api ./cmd/mellon-api/
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build React frontend
+        run: |
+          cd ui
+          npm ci
+          npm run build
+
+      - name: Copy React build to www/
+        run: rm -rf www/assets && cp -r ui/dist/* www/
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install rsconnect
+        run: pip install rsconnect-python
+
+      - name: Deploy to shinyapps.io
+        env:
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: |
+          rsconnect add --account rainoffallingstar --name rainoffallingstar \
+            --token "$SHINYAPPS_TOKEN" --secret "$SHINYAPPS_SECRET"
+          bash scripts/deploy_shinyapps.sh
