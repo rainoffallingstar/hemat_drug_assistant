@@ -45,6 +45,7 @@ jobs:
           RSCONNECT_ACCOUNT:  ${{ secrets.RSCONNECT_ACCOUNT }}
           RSCONNECT_TOKEN:    ${{ secrets.RSCONNECT_TOKEN }}
           RSCONNECT_SECRET:   ${{ secrets.RSCONNECT_SECRET }}
+          PYTHON_BIN:         python3
         run: |
           rsconnect add --account "$RSCONNECT_ACCOUNT" --name "$RSCONNECT_ACCOUNT" \
             --token "$RSCONNECT_TOKEN" --secret "$RSCONNECT_SECRET"
